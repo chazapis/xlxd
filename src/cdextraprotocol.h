@@ -75,6 +75,7 @@ protected:
     void HandleQueue(void);
 
     // keepalive helpers
+    void HandlePeerLinks(void);
     void HandleKeepalives(void);
 
     // stream helpers
@@ -101,6 +102,7 @@ protected:
 protected:
     // time
     CTimePoint          m_LastKeepaliveTime;
+    CTimePoint          m_LastPeersLinkTime;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////

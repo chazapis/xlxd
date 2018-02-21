@@ -52,6 +52,7 @@ bool CDextraProtocol::Init(void)
     
     // update time
     m_LastKeepaliveTime.Now();
+    m_LastPeersLinkTime.Now();
     
     // done
     return ok;
@@ -193,14 +194,24 @@ void CDextraProtocol::Task(void)
     // handle queue from reflector
     HandleQueue();
         
-    // keep client alive
+    // keep alive
     if ( m_LastKeepaliveTime.DurationSinceNow() > DEXTRA_KEEPALIVE_PERIOD )
     {
-        //
+        // handle keep alives
         HandleKeepalives();
         
         // update time
         m_LastKeepaliveTime.Now();
+    }
+
+    // peer connections
+    if ( m_LastPeersLinkTime.DurationSinceNow() > DEXTRA_RECONNECT_PERIOD )
+    {
+        // handle remote peers connections
+        HandlePeerLinks();
+        
+        // update time
+        m_LastPeersLinkTime.Now();
     }
 }
 
@@ -288,6 +299,57 @@ void CDextraProtocol::HandleKeepalives(void)
         
     }
     g_Reflector.ReleaseClients();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////
+// Peers helpers
+
+void CDextraProtocol::HandlePeerLinks(void)
+{
+    CBuffer buffer;
+    
+    // get the list of peers
+    CPeerCallsignList *list = g_GateKeeper.GetPeerList();
+    CPeers *peers = g_Reflector.GetPeers();
+
+    // check if all our connected peers are still listed by gatekeeper
+    // if not, disconnect
+    int index = -1;
+    CPeer *peer = NULL;
+    while ( (peer = peers->FindNextPeer(PROTOCOL_DEXTRA, &index)) != NULL )
+    {
+        if ( list->FindListItem(peer->GetCallsign()) == NULL )
+        {
+            // send disconnect packet
+            EncodeDisconnectPacket(&buffer);
+            m_Socket.Send(buffer, peer->GetIp());
+            std::cout << "Sending disconnect packet to XRF peer " << peer->GetCallsign() << std::endl;
+            // remove client
+            peers->RemovePeer(peer);
+        }
+    }
+    
+    // check if all ours peers listed by gatekeeper are connected
+    // if not, connect or reconnect
+    for ( int i = 0; i < list->size(); i++ )
+    {
+        CCallsignListItem *item = &((list->data())[i]);
+        if ( !item->GetCallsign()->HasSameCallsignWithWildcard(CCallsign("XRF*")) )
+            continue;
+        if ( peers->FindPeer(item->GetCallsign(), PROTOCOL_DEXTRA) == NULL )
+        {
+            // resolve again peer's IP in case it's a dynamic IP
+            item->ResolveIp();
+            // send connect packet to re-initiate peer link
+            EncodeConnectPacket(&buffer, item->GetModules());
+            m_Socket.Send(buffer, item->GetIp(), DEXTRA_PORT);
+            std::cout << "Sending connect packet to XRF peer " << item->GetCallsign() << " @ " << item->GetIp() << " for modules " << item->GetModules() << std::endl;
+        }
+    }
+    
+    // done
+    g_Reflector.ReleasePeers();
+    g_GateKeeper.ReleasePeerList();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
