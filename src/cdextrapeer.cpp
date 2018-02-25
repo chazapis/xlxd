@@ -37,7 +37,7 @@ CDextraPeer::CDextraPeer()
 {
 }
 
-CDextraPeer::CDextraPeer(const CCallsign &callsign, const CIp &ip, char *modules, const CVersion &version)
+CDextraPeer::CDextraPeer(const CCallsign &callsign, const CIp &ip, const char *modules, const CVersion &version)
 : CPeer(callsign, ip, modules, version)
 {
     std::cout << "Adding DExtra peer" << std::endl;

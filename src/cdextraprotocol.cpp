@@ -130,7 +130,7 @@ void CDextraProtocol::Task(void)
                         {
                             // create the new peer
                             // this also create one client per module
-                            CPeer *peer = new CDextraPeer(Callsign, Ip, &ToLinkModule, CVersion(2, 0, 0));
+                            CPeer *peer = new CDextraPeer(Callsign, Ip, std::string(1, ToLinkModule).c_str(), CVersion(2, 0, 0));
 
                             // append the peer to reflector peer list
                             // this also add all new clients to reflector client list
@@ -567,7 +567,7 @@ void CDextraProtocol::EncodeConnectPacket(CBuffer *Buffer, const char *Modules)
 {
     uint8 lm = (uint8)Modules[0];
     uint8 rm = (uint8)Modules[1];
-    Buffer->Set(GetReflectorCallsign());
+    Buffer->Set((uint8 *)(const char *)GetReflectorCallsign(), CALLSIGN_LEN);
     Buffer->Append(lm);
     Buffer->Append(rm);
     Buffer->Append((uint8)0);

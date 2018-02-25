@@ -37,7 +37,7 @@ CXlxPeer::CXlxPeer()
 {
 }
 
-CXlxPeer::CXlxPeer(const CCallsign &callsign, const CIp &ip, char *modules, const CVersion &version)
+CXlxPeer::CXlxPeer(const CCallsign &callsign, const CIp &ip, const char *modules, const CVersion &version)
 : CPeer(callsign, ip, modules, version)
 {
     // get protocol revision

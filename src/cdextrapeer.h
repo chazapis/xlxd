@@ -40,7 +40,7 @@ class CDextraPeer : public CPeer
 public:
     // constructors
     CDextraPeer();
-    CDextraPeer(const CCallsign &, const CIp &, char *, const CVersion &);
+    CDextraPeer(const CCallsign &, const CIp &, const char *, const CVersion &);
     CDextraPeer(const CDextraPeer &);
     
     // destructor

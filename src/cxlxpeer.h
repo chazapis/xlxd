@@ -40,7 +40,7 @@ class CXlxPeer : public CPeer
 public:
     // constructors
     CXlxPeer();
-    CXlxPeer(const CCallsign &, const CIp &, char *, const CVersion &);
+    CXlxPeer(const CCallsign &, const CIp &, const char *, const CVersion &);
     CXlxPeer(const CXlxPeer &);
     
     // destructor

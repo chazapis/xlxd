@@ -42,7 +42,7 @@ class CPeer
 public:
     // constructors
     CPeer();
-    CPeer(const CCallsign &, const CIp &, char *, const CVersion &);
+    CPeer(const CCallsign &, const CIp &, const char *, const CVersion &);
     CPeer(const CPeer &);
     
     // destructor
