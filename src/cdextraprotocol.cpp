@@ -119,10 +119,9 @@ void CDextraProtocol::Task(void)
                 {
                     // is this an ack for a link request?
                     CCallsignListItem *item = g_GateKeeper.GetPeerList()->FindListItem(Callsign);
-                    const char *modules = item->GetModules();
-                    if ( item != NULL && Callsign.GetModule() == modules[1] && ToLinkModule == modules[0] )
+                    if ( item != NULL && Callsign.GetModule() == item->GetModules()[1] && ToLinkModule == item->GetModules()[0] )
                     {
-                        std::cout << "DExtra ack packet for module " << modules[0] << " from " << Callsign << " at " << Ip << std::endl;
+                        std::cout << "DExtra ack packet for module " << item->GetModules()[0] << " from " << Callsign << " at " << Ip << std::endl;
             
                         // already connected ?
                         CPeers *peers = g_Reflector.GetPeers();
@@ -151,6 +150,7 @@ void CDextraProtocol::Task(void)
                         g_Reflector.GetClients()->AddClient(client);
                         g_Reflector.ReleaseClients();
                     }
+                    g_GateKeeper.ReleasePeerList();
                 }
                 else
                 {
