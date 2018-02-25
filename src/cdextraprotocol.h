@@ -91,6 +91,7 @@ protected:
     
     // packet encoding helpers
     void                EncodeKeepAlivePacket(CBuffer *);
+    void                EncodeConnectPacket(CBuffer *, const char *);
     void                EncodeConnectAckPacket(CBuffer *, int);
     void                EncodeConnectNackPacket(CBuffer *);
     void                EncodeDisconnectPacket(CBuffer *);

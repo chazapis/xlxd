@@ -384,7 +384,7 @@ void CXlxProtocol::HandlePeerLinks(void)
     for ( int i = 0; i < list->size(); i++ )
     {
         CCallsignListItem *item = &((list->data())[i]);
-        if ( item->GetCallsign()->HasSameCallsignWithWildcard(CCallsign("XRF*")) )
+        if ( item->GetCallsign().HasSameCallsignWithWildcard(CCallsign("XRF*")) )
             continue;
         if ( peers->FindPeer(item->GetCallsign(), PROTOCOL_XLX) == NULL )
         {

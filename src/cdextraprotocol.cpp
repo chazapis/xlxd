@@ -24,6 +24,7 @@
 
 #include "main.h"
 #include <string.h>
+#include "cdextrapeer.h"
 #include "cdextraclient.h"
 #include "cdextraprotocol.h"
 #include "creflector.h"
@@ -116,16 +117,40 @@ void CDextraProtocol::Task(void)
                 // valid module ?
                 if ( g_Reflector.IsValidModule(ToLinkModule) )
                 {
-                    // acknowledge the request
-                    EncodeConnectAckPacket(&Buffer, ProtRev);
-                    m_Socket.Send(Buffer, Ip);
-                    
-                    // create the client
-                    CDextraClient *client = new CDextraClient(Callsign, Ip, ToLinkModule, ProtRev);
-                    
-                    // and append
-                    g_Reflector.GetClients()->AddClient(client);
-                    g_Reflector.ReleaseClients();
+                    // is this an ack for a link request?
+                    CCallsignListItem *item = g_GateKeeper.GetPeerList()->FindListItem(Callsign);
+                    const char *modules = item->GetModules();
+                    if ( item != NULL && Callsign.GetModule() == modules[1] && ToLinkModule == modules[0] )
+                    {
+                        std::cout << "DExtra ack packet for module " << modules[0] << " from " << Callsign << " at " << Ip << std::endl;
+            
+                        // already connected ?
+                        CPeers *peers = g_Reflector.GetPeers();
+                        if ( peers->FindPeer(Callsign, Ip, PROTOCOL_DEXTRA) == NULL )
+                        {
+                            // create the new peer
+                            // this also create one client per module
+                            CPeer *peer = new CDextraPeer(Callsign, Ip, &ToLinkModule, CVersion(2, 0, 0));
+
+                            // append the peer to reflector peer list
+                            // this also add all new clients to reflector client list
+                            peers->AddPeer(peer);
+                        }
+                        g_Reflector.ReleasePeers();
+                    }
+                    else
+                    {
+                        // acknowledge the request
+                        EncodeConnectAckPacket(&Buffer, ProtRev);
+                        m_Socket.Send(Buffer, Ip);
+                        
+                        // create the client
+                        CDextraClient *client = new CDextraClient(Callsign, Ip, ToLinkModule, ProtRev);
+                        
+                        // and append
+                        g_Reflector.GetClients()->AddClient(client);
+                        g_Reflector.ReleaseClients();
+                    }
                 }
                 else
                 {
@@ -334,7 +359,9 @@ void CDextraProtocol::HandlePeerLinks(void)
     for ( int i = 0; i < list->size(); i++ )
     {
         CCallsignListItem *item = &((list->data())[i]);
-        if ( !item->GetCallsign()->HasSameCallsignWithWildcard(CCallsign("XRF*")) )
+        if ( !item->GetCallsign().HasSameCallsignWithWildcard(CCallsign("XRF*")) )
+            continue;
+        if ( strlen(item->GetModules()) != 2 )
             continue;
         if ( peers->FindPeer(item->GetCallsign(), PROTOCOL_DEXTRA) == NULL )
         {
@@ -343,7 +370,7 @@ void CDextraProtocol::HandlePeerLinks(void)
             // send connect packet to re-initiate peer link
             EncodeConnectPacket(&buffer, item->GetModules());
             m_Socket.Send(buffer, item->GetIp(), DEXTRA_PORT);
-            std::cout << "Sending connect packet to XRF peer " << item->GetCallsign() << " @ " << item->GetIp() << " for modules " << item->GetModules() << std::endl;
+            std::cout << "Sending connect packet to XRF peer " << item->GetCallsign() << " @ " << item->GetIp() << " for module " << item->GetModules()[1] << " (module " << item->GetModules()[0] << ")" << std::endl;
         }
     }
     
@@ -450,7 +477,7 @@ bool CDextraProtocol::IsValidDisconnectPacket(const CBuffer &Buffer, CCallsign *
     {
         callsign->SetCallsign(Buffer.data(), 8);
         callsign->SetModule(Buffer.data()[8]);
-       valid = callsign->IsValid();
+        valid = callsign->IsValid();
     }
     return valid;
 }
@@ -533,12 +560,22 @@ CDvLastFramePacket *CDextraProtocol::IsValidDvLastFramePacket(const CBuffer &Buf
 
 void CDextraProtocol::EncodeKeepAlivePacket(CBuffer *Buffer)
 {
-   Buffer->Set(GetReflectorCallsign());
+    Buffer->Set(GetReflectorCallsign());
+}
+
+void CDextraProtocol::EncodeConnectPacket(CBuffer *Buffer, const char *Modules)
+{
+    uint8 lm = (uint8)Modules[0];
+    uint8 rm = (uint8)Modules[1];
+    Buffer->Set(GetReflectorCallsign());
+    Buffer->Append(lm);
+    Buffer->Append(rm);
+    Buffer->Append((uint8)0);
 }
 
 void CDextraProtocol::EncodeConnectAckPacket(CBuffer *Buffer, int ProtRev)
 {
-   // is it for a XRF or repeater
+    // is it for a XRF or repeater
     if ( ProtRev == 2 )
     {
         // XRFxxx
