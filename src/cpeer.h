@@ -54,7 +54,7 @@ public:
     // get
     const CCallsign &GetCallsign(void) const            { return m_Callsign; }
     const CIp &GetIp(void) const                        { return m_Ip; }
-    char *GetModulesModules(void)                       { return m_ReflectorModules; }
+    char *GetReflectorModules(void)                     { return m_ReflectorModules; }
     
     // set
     

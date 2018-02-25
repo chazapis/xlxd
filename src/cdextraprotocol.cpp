@@ -118,7 +118,8 @@ void CDextraProtocol::Task(void)
                 if ( g_Reflector.IsValidModule(ToLinkModule) )
                 {
                     // is this an ack for a link request?
-                    CCallsignListItem *item = g_GateKeeper.GetPeerList()->FindListItem(Callsign);
+                    CPeerCallsignList *list = g_GateKeeper.GetPeerList();
+                    CCallsignListItem *item = list->FindListItem(Callsign);
                     if ( item != NULL && Callsign.GetModule() == item->GetModules()[1] && ToLinkModule == item->GetModules()[0] )
                     {
                         std::cout << "DExtra ack packet for module " << item->GetModules()[0] << " from " << Callsign << " at " << Ip << std::endl;
@@ -319,7 +320,20 @@ void CDextraProtocol::HandleKeepalives(void)
             
             // remove it
             std::cout << "DExtra client " << client->GetCallsign() << " keepalive timeout" << std::endl;
-            clients->RemoveClient(client);
+            CPeers *peers = g_Reflector.GetPeers();
+            CPeer *peer = peers->FindPeer(client->GetCallsign(), client->GetIp(), PROTOCOL_DEXTRA);
+            if ( peer != NULL && peer->GetReflectorModules()[0] == client->GetReflectorModule() )
+            {
+                // remove it from reflector peer list
+                // this also remove all concerned clients from reflector client list
+                // and delete them
+                peers->RemovePeer(peer);
+            }
+            else
+            {
+                clients->RemoveClient(client);
+            }
+            g_Reflector.ReleasePeers();
         }
         
     }
