@@ -81,7 +81,12 @@ CDextraPeer::~CDextraPeer()
 
 bool CDextraPeer::IsAlive(void) const
 {
-    return (m_LastKeepaliveTime.DurationSinceNow() < DEXTRA_KEEPALIVE_TIMEOUT);
+    bool alive = true;
+    for ( int i = 0; (i < m_Clients.size()) && alive ; i++ )
+    {
+        alive &= m_Clients[i]->IsAlive();
+    }
+    return alive;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////

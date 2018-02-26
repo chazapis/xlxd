@@ -294,7 +294,7 @@ void CDextraProtocol::HandleKeepalives(void)
     // so, send keepalives to all
     CBuffer keepalive;
     EncodeKeepAlivePacket(&keepalive);
-    
+
     // iterate on clients
     CClients *clients = g_Reflector.GetClients();
     int index = -1;
@@ -313,24 +313,21 @@ void CDextraProtocol::HandleKeepalives(void)
         // otherwise check if still with us
         else if ( !client->IsAlive() )
         {
-            // no, disconnect
-            CBuffer disconnect;
-            EncodeDisconnectPacket(&disconnect);
-            m_Socket.Send(disconnect, client->GetIp());
-            
-            // remove it
-            std::cout << "DExtra client " << client->GetCallsign() << " keepalive timeout" << std::endl;
             CPeers *peers = g_Reflector.GetPeers();
             CPeer *peer = peers->FindPeer(client->GetCallsign(), client->GetIp(), PROTOCOL_DEXTRA);
             if ( peer != NULL && peer->GetReflectorModules()[0] == client->GetReflectorModule() )
             {
-                // remove it from reflector peer list
-                // this also remove all concerned clients from reflector client list
-                // and delete them
-                peers->RemovePeer(peer);
+                // no, but this is a peer client, so it will be handled below
             }
             else
             {
+                // no, disconnect
+                CBuffer disconnect;
+                EncodeDisconnectPacket(&disconnect);
+                m_Socket.Send(disconnect, client->GetIp());
+                
+                // remove it
+                std::cout << "DExtra client " << client->GetCallsign() << " keepalive timeout" << std::endl;
                 clients->RemoveClient(client);
             }
             g_Reflector.ReleasePeers();
@@ -338,6 +335,34 @@ void CDextraProtocol::HandleKeepalives(void)
         
     }
     g_Reflector.ReleaseClients();
+
+    // iterate on peers
+    CPeers *peers = g_Reflector.GetPeers();
+    index = -1;
+    CPeer *peer = NULL;
+    while ( (peer = peers->FindNextPeer(PROTOCOL_DEXTRA, &index)) != NULL )
+    {
+        // keepalives are sent between clients
+
+        // some client busy or still with us ?
+        if ( !peer->IsAMaster() && !peer->IsAlive() )
+        {
+            // no, disconnect all clients
+            CBuffer disconnect;
+            EncodeDisconnectPacket(&disconnect);
+            CClients *clients = g_Reflector.GetClients();
+            for ( int i = 0; i < peer->GetNbClients(); i++ )
+            {
+                m_Socket.Send(disconnect, peer->GetClient(i)->GetIp());
+            }
+            g_Reflector.ReleaseClients();
+            
+            // remove it
+            std::cout << "DExtra peer " << peer->GetCallsign() << " keepalive timeout" << std::endl;
+            peers->RemovePeer(peer);
+        }        
+    }
+    g_Reflector.ReleasePeers();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
