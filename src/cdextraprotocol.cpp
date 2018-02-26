@@ -122,7 +122,7 @@ void CDextraProtocol::Task(void)
                     CCallsignListItem *item = list->FindListItem(Callsign);
                     if ( item != NULL && Callsign.GetModule() == item->GetModules()[1] && ToLinkModule == item->GetModules()[0] )
                     {
-                        std::cout << "DExtra ack packet for module " << item->GetModules()[0] << " from " << Callsign << " at " << Ip << std::endl;
+                        std::cout << "DExtra ack packet for module " << ToLinkModule << " from " << Callsign << " at " << Ip << std::endl;
             
                         // already connected ?
                         CPeers *peers = g_Reflector.GetPeers();
