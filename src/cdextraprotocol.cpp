@@ -323,7 +323,7 @@ void CDextraProtocol::HandleKeepalives(void)
             {
                 // no, disconnect
                 CBuffer disconnect;
-                EncodeDisconnectPacket(&disconnect);
+                EncodeDisconnectPacket(&disconnect, client->GetReflectorModule());
                 m_Socket.Send(disconnect, client->GetIp());
                 
                 // remove it
@@ -349,7 +349,7 @@ void CDextraProtocol::HandleKeepalives(void)
         {
             // no, disconnect all clients
             CBuffer disconnect;
-            EncodeDisconnectPacket(&disconnect);
+            EncodeDisconnectPacket(&disconnect, peer->GetReflectorModules()[0]);
             CClients *clients = g_Reflector.GetClients();
             for ( int i = 0; i < peer->GetNbClients(); i++ )
             {
@@ -385,7 +385,7 @@ void CDextraProtocol::HandlePeerLinks(void)
         if ( list->FindListItem(peer->GetCallsign()) == NULL )
         {
             // send disconnect packet
-            EncodeDisconnectPacket(&buffer);
+            EncodeDisconnectPacket(&buffer, peer->GetReflectorModules()[0]);
             m_Socket.Send(buffer, peer->GetIp());
             std::cout << "Sending disconnect packet to XRF peer " << peer->GetCallsign() << std::endl;
             // remove client
@@ -642,10 +642,12 @@ void CDextraProtocol::EncodeConnectNackPacket(CBuffer *Buffer)
     Buffer->Append(tag, sizeof(tag));
 }
 
-void CDextraProtocol::EncodeDisconnectPacket(CBuffer *Buffer)
+void CDextraProtocol::EncodeDisconnectPacket(CBuffer *Buffer, char Module)
 {
-    uint8 tag[] = { ' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',0 };
-    Buffer->Set(tag, sizeof(tag));
+    uint8 tag[] = { ' ',0 };
+    Buffer->Set((uint8 *)(const char *)GetReflectorCallsign(), CALLSIGN_LEN);
+    Buffer->Append((uint8)Module);
+    Buffer->Append(tag, sizeof(tag));
 }
 
 void CDextraProtocol::EncodeDisconnectedPacket(CBuffer *Buffer)
