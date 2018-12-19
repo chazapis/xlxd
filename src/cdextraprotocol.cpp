@@ -88,7 +88,7 @@ void CDextraProtocol::Task(void)
             //std::cout << "DExtra DV header:"  << std::endl;
             
             // callsign muted?
-            if ( g_GateKeeper.MayTransmit(Header->GetMyCallsign(), Ip, PROTOCOL_DEXTRA, Header->GetRpt2Module()) )
+            if ( g_GateKeeper.MayTransmit(Header->GetMyCallsign(), Ip, GetProtocol(), Header->GetRpt2Module()) )
             {
                 // handle it
                 OnDvHeaderPacketIn(Header, Ip);
@@ -110,7 +110,7 @@ void CDextraProtocol::Task(void)
             std::cout << "DExtra connect packet for module " << ToLinkModule << " from " << Callsign << " at " << Ip << " rev " << ProtRev << std::endl;
             
             // callsign authorized?
-            if ( g_GateKeeper.MayLink(Callsign, Ip, PROTOCOL_DEXTRA) )
+            if ( g_GateKeeper.MayLink(Callsign, Ip, GetProtocol()) )
             {
                 // valid module ?
                 if ( g_Reflector.IsValidModule(ToLinkModule) )
@@ -148,7 +148,7 @@ void CDextraProtocol::Task(void)
             
             // find client & remove it
             CClients *clients = g_Reflector.GetClients();
-            CClient *client = clients->FindClient(Ip, PROTOCOL_DEXTRA);
+            CClient *client = clients->FindClient(Ip, GetProtocol());
             if ( client != NULL )
             {
                 // ack disconnect packet
@@ -174,7 +174,7 @@ void CDextraProtocol::Task(void)
             CClients *clients = g_Reflector.GetClients();
             int index = -1;
             CClient *client = NULL;
-            while ( (client = clients->FindNextClient(Callsign, Ip, PROTOCOL_DEXTRA, &index)) != NULL )
+            while ( (client = clients->FindNextClient(Callsign, Ip, GetProtocol(), &index)) != NULL )
             {
                client->Alive();
             }
@@ -224,7 +224,7 @@ void CDextraProtocol::HandleQueue(void)
             CClients *clients = g_Reflector.GetClients();
             int index = -1;
             CClient *client = NULL;
-            while ( (client = clients->FindNextClient(PROTOCOL_DEXTRA, &index)) != NULL )
+            while ( (client = clients->FindNextClient(GetProtocol(), &index)) != NULL )
             {
                 // is this client busy ?
                 if ( !client->IsAMaster() && (client->GetReflectorModule() == packet->GetModuleId()) )
@@ -262,7 +262,7 @@ void CDextraProtocol::HandleKeepalives(void)
     CClients *clients = g_Reflector.GetClients();
     int index = -1;
     CClient *client = NULL;
-    while ( (client = clients->FindNextClient(PROTOCOL_DEXTRA, &index)) != NULL )
+    while ( (client = clients->FindNextClient(GetProtocol(), &index)) != NULL )
     {
         // send keepalive
         m_Socket.Send(keepalive, client->GetIp());
@@ -305,7 +305,7 @@ bool CDextraProtocol::OnDvHeaderPacketIn(CDvHeaderPacket *Header, const CIp &Ip)
         CCallsign via(Header->GetRpt1Callsign());
         
         // find this client
-        CClient *client = g_Reflector.GetClients()->FindClient(Ip, PROTOCOL_DEXTRA);
+        CClient *client = g_Reflector.GetClients()->FindClient(Ip, GetProtocol());
         if ( client != NULL )
         {
             // get client callsign

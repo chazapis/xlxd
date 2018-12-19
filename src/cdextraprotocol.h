@@ -70,6 +70,9 @@ public:
     // task
     void Task(void);
 
+    // identity
+    int GetProtocol(void) const { return PROTOCOL_DEXTRA; }
+
 protected:
     // queue helper
     void HandleQueue(void);

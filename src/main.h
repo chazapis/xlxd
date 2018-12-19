@@ -65,21 +65,25 @@
 
 // protocols ---------------------------------------------------
 
-#define NB_OF_PROTOCOLS                 6
+#define NB_OF_PROTOCOLS                 7
 
 #define PROTOCOL_ANY                    -1
 #define PROTOCOL_NONE                   0
 #define PROTOCOL_DEXTRA                 1
-#define PROTOCOL_DPLUS                  2
-#define PROTOCOL_DCS                    3
-#define PROTOCOL_XLX                    4
-#define PROTOCOL_DMRPLUS                5
-#define PROTOCOL_DMRMMDVM               6
+#define PROTOCOL_DEXTRA_OPEN            2
+#define PROTOCOL_DPLUS                  3
+#define PROTOCOL_DCS                    4
+#define PROTOCOL_XLX                    5
+#define PROTOCOL_DMRPLUS                6
+#define PROTOCOL_DMRMMDVM               7
 
-// DExtra
+// DExtra (AMBE output)
 #define DEXTRA_PORT                     30001                               // UDP port
 #define DEXTRA_KEEPALIVE_PERIOD         3                                   // in seconds
 #define DEXTRA_KEEPALIVE_TIMEOUT        (DEXTRA_KEEPALIVE_PERIOD*10)        // in seconds
+
+// DExtra (Codec 2 output)
+#define DEXTRA_OPEN_PORT                30201                               // UDP port
 
 // DPlus
 #define DPLUS_PORT                      20001                               // UDP port
