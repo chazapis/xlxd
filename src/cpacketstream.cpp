@@ -40,7 +40,7 @@ CPacketStream::CPacketStream()
 ////////////////////////////////////////////////////////////////////////////////////////
 // open / close
 
-bool CPacketStream::Open(const CDvHeaderPacket &DvHeader, CClient *client)
+bool CPacketStream::Open(const CDvHeaderPacket &DvHeader, CClient *client, uint8 CodecIn)
 {
     bool ok = false;
     
@@ -54,7 +54,7 @@ bool CPacketStream::Open(const CDvHeaderPacket &DvHeader, CClient *client)
         m_DvHeader = DvHeader;
         m_OwnerClient = client;
         m_LastPacketTime.Now();
-        m_CodecStream = g_Transcoder.GetStream(this, client->GetCodec());
+        m_CodecStream = g_Transcoder.GetStream(this, CodecIn);
         ok = true;
     }
     return ok;

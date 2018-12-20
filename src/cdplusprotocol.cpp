@@ -225,7 +225,7 @@ bool CDplusProtocol::OnDvHeaderPacketIn(CDvHeaderPacket *Header, const CIp &Ip)
                 // get client callsign
                 via = client->GetCallsign();
                 // and try to open the stream
-                if ( (stream = g_Reflector.OpenStream(Header, client)) != NULL )
+                if ( (stream = g_Reflector.OpenStream(Header, client, Header->GetCodec())) != NULL )
                 {
                     // keep the handle
                     m_Streams.push_back(stream);

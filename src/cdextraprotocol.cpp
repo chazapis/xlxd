@@ -318,7 +318,7 @@ bool CDextraProtocol::OnDvHeaderPacketIn(CDvHeaderPacket *Header, const CIp &Ip)
                 Header->SetRpt2Module(client->GetReflectorModule());
             }
             // and try to open the stream
-            if ( (stream = g_Reflector.OpenStream(Header, client)) != NULL )
+            if ( (stream = g_Reflector.OpenStream(Header, client, Header->GetCodec())) != NULL )
             {
                 // keep the handle
                 m_Streams.push_back(stream);

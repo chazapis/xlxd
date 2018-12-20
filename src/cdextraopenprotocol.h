@@ -30,17 +30,14 @@
 ////////////////////////////////////////////////////////////////////////////////////////
 
 // With the D-STAR vocoder extension by SV9OAN, voice in D-STAR streams can be encoded
-// with either AMBE or Codec 2. The extension is backwards compatible and can be used
-// with all current D-STAR hardware (repeaters, hotspots, etc.) and software
-// (repeater controllers, reflectors, etc.), except - of course - transceivers.
+// with either AMBE or Codec 2. Although the extension is backwards compatible and
+// implementations can use the same reflector connections as AMBE-only clients,
+// it should be avoided, to save the user confusion and establish interoperability.
 
-// Although implementations of the vocoder extension can use the same reflector connections
-// as AMBE-only clients, it should be avoided, to save the user confusion and establish
-// interoperability.
+// By implementing another DExtra listener on a different port (30201 instead of 30001),
+// xlxd can be used to bridge between the two formats. The new port is to be used by
+// reflectors using the "ORF" prefix (Open ReFlector).
 
-// xlxd, can be used to transcode and bridge the two formats. This is done by
-// implementing another DExtra listener on a different port (30201 instead of 30001).
-// This port is to be used by reflectors using the "ORF" prefix (Open ReFlector).
 // Any client connected to an ORF reflector will receive streams encoded with Codec 2.
 // All other D-STAR protocol handlers will still send out data encoded with AMBE.
 // Note that the protocol/port only affects data transmitted by the reflector.

@@ -128,6 +128,21 @@ bool CDvHeaderPacket::IsValid(void) const
 
 
 ////////////////////////////////////////////////////////////////////////////////////////
+// get codec
+
+uint8 CDvHeaderPacket::GetCodec(void) const
+{
+    // D-STAR vocoder extension by SV9OAN
+    if ( m_uiFlag3 & 0x01 )
+    {
+        return CODEC_CODEC2;
+    }
+
+    return CODEC_AMBEPLUS;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////
 // operators
 
 bool CDvHeaderPacket::operator ==(const CDvHeaderPacket &Header) const

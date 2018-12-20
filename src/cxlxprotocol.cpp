@@ -425,7 +425,7 @@ bool CXlxProtocol::OnDvHeaderPacketIn(CDvHeaderPacket *Header, const CIp &Ip)
         if ( client != NULL )
         {
             // and try to open the stream
-            if ( (stream = g_Reflector.OpenStream(Header, client)) != NULL )
+            if ( (stream = g_Reflector.OpenStream(Header, client, client->GetCodec())) != NULL )
             {
                 // keep the handle
                 m_Streams.push_back(stream);

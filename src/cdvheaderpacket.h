@@ -79,6 +79,9 @@ public:
 
     // get valid
     bool IsValid(void) const;
+
+    // get codec
+    uint8 GetCodec(void) const;
     
     // get callsigns
     const CCallsign &GetUrCallsign(void) const      { return m_csUR; }
