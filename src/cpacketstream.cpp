@@ -34,6 +34,7 @@ CPacketStream::CPacketStream()
     m_uiStreamId = 0;
     m_uiPacketCntr = 0;
     m_OwnerClient = NULL;
+    m_CodecIn = CODEC_NONE;
     m_CodecStream = NULL;
 }
 
@@ -54,6 +55,7 @@ bool CPacketStream::Open(const CDvHeaderPacket &DvHeader, CClient *client, uint8
         m_DvHeader = DvHeader;
         m_OwnerClient = client;
         m_LastPacketTime.Now();
+        m_CodecIn = CodecIn;
         m_CodecStream = g_Transcoder.GetStream(this, CodecIn);
         ok = true;
     }
@@ -67,6 +69,7 @@ void CPacketStream::Close(void)
     m_uiStreamId = 0;
     m_OwnerClient = NULL;
     g_Transcoder.ReleaseStream(m_CodecStream);
+    m_CodecIn = CODEC_NONE;
     m_CodecStream = NULL;
 }
 

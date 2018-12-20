@@ -63,6 +63,7 @@ public:
     bool            IsOpen(void) const              { return m_bOpen; }
     uint16          GetStreamId(void) const         { return m_uiStreamId; }
     const CCallsign &GetUserCallsign(void) const    { return m_DvHeader.GetMyCallsign(); }
+    uint8           GetCodec(void) const            { return m_CodecIn; }
 
 protected:
     // data
@@ -72,6 +73,7 @@ protected:
     CClient             *m_OwnerClient;
     CTimePoint          m_LastPacketTime;
     CDvHeaderPacket     m_DvHeader;
+    uint8               m_CodecIn;
     CCodecStream        *m_CodecStream;
 };
 
