@@ -26,6 +26,8 @@
 #define cdextraopenprotocol_h
 
 #include "cdextraprotocol.h"
+#include "cdvheaderpacket.h"
+#include "cdvframepacket.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
@@ -41,7 +43,7 @@
 // Any client connected to an ORF reflector will receive streams encoded with Codec 2.
 // All other D-STAR protocol handlers will still send out data encoded with AMBE.
 // Note that the protocol/port only affects data transmitted by the reflector.
-// The stream vocoder is recognized in all protocol handlers, so a client can still
+// The stream vocoder is recognized by all protocol handlers, so a client can still
 // transmit data using any vocoder on any port. The rationale behind this is that
 // DExtra links may be used by repeaters or other reflectors, so it is not really
 // possible to know what their clients support. So, nothing will change when linking
@@ -62,6 +64,11 @@ public:
     
     // identity
     int GetProtocol(void) const { return PROTOCOL_DEXTRA_OPEN; }
+
+protected:
+    // packet encoding helpers
+    bool                EncodeDvHeaderPacket(const CDvHeaderPacket &, CBuffer *) const;
+    bool                EncodeDvFramePacket(const CDvFramePacket &, CBuffer *) const;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////

@@ -53,3 +53,35 @@ bool CDextraOpenProtocol::Init(void)
     // done
     return ok;
 }
+
+////////////////////////////////////////////////////////////////////////////////////////
+// packet encoding helpers
+
+bool CDextraProtocol::EncodeDvHeaderPacket(const CDvHeaderPacket &Packet, CBuffer *Buffer) const
+{
+    uint8 tag[] = { 'D','S','V','T',0x10,0x00,0x00,0x00,0x20,0x00,0x01,0x02 };
+    struct dstar_header DstarHeader;
+    
+    Packet.ConvertToDstarStruct(&DstarHeader, CODEC_CODEC2);
+    
+    Buffer->Set(tag, sizeof(tag));
+    Buffer->Append(Packet.GetStreamId());
+    Buffer->Append((uint8)0x80);
+    Buffer->Append((uint8 *)&DstarHeader, sizeof(struct dstar_header));
+    
+    return true;
+}
+
+bool CDextraProtocol::EncodeDvFramePacket(const CDvFramePacket &Packet, CBuffer *Buffer) const
+{
+    uint8 tag[] = { 'D','S','V','T',0x20,0x00,0x00,0x00,0x20,0x00,0x01,0x02 };
+    
+    Buffer->Set(tag, sizeof(tag));
+    Buffer->Append(Packet.GetStreamId());
+    Buffer->Append((uint8)(Packet.GetPacketId() % 21));
+    Buffer->Append((uint8 *)Packet.GetCodec2(), AMBE_SIZE);
+    Buffer->Append((uint8 *)Packet.GetDvData(), DVDATA_SIZE);
+    
+    return true;
+    
+}
