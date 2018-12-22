@@ -24,8 +24,8 @@
 
 #include "main.h"
 #include <string.h>
-#include "cdextraclient.h"
 #include "cdextraprotocol.h"
+#include "cdextraclient.h"
 #include "creflector.h"
 #include "cgatekeeper.h"
 
@@ -120,7 +120,7 @@ void CDextraProtocol::Task(void)
                     m_Socket.Send(Buffer, Ip);
                     
                     // create the client
-                    CDextraClient *client = new CDextraClient(Callsign, Ip, ToLinkModule, ProtRev);
+                    CClient *client = CreateClient(Callsign, Ip, ToLinkModule, ProtRev);
                     
                     // and append
                     g_Reflector.GetClients()->AddClient(client);
@@ -202,6 +202,15 @@ void CDextraProtocol::Task(void)
         // update time
         m_LastKeepaliveTime.Now();
     }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////
+// create client
+
+CClient *CDextraProtocol::CreateClient(const CCallsign &callsign, const CIp &ip, char reflectormodule, int revision) const
+{
+    CClient *client = new CDextraClient(callsign, ip, reflectormodule, revision);
+    return client;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////

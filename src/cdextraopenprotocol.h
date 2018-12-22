@@ -28,6 +28,7 @@
 #include "cdextraprotocol.h"
 #include "cdvheaderpacket.h"
 #include "cdvframepacket.h"
+#include "cclient.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
@@ -69,6 +70,9 @@ public:
     int GetProtocol(void) const { return PROTOCOL_DEXTRA_OPEN; }
 
 protected:
+    // create client
+    CClient             *CreateClient(const CCallsign &, const CIp &, char, int) const;
+
     // packet encoding helpers
     bool                EncodeDvHeaderPacket(const CDvHeaderPacket &, CBuffer *) const;
     bool                EncodeDvFramePacket(const CDvFramePacket &, CBuffer *) const;

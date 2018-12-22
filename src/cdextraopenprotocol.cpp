@@ -23,7 +23,9 @@
 // ----------------------------------------------------------------------------
 
 #include "main.h"
+#include <string.h>
 #include "cdextraopenprotocol.h"
+#include "cdextraopenclient.h"
 #include "creflector.h"
 
 
@@ -52,6 +54,15 @@ bool CDextraOpenProtocol::Init(void)
     
     // done
     return ok;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////
+// create client
+
+CClient *CDextraOpenProtocol::CreateClient(const CCallsign &callsign, const CIp &ip, char reflectormodule, int revision) const
+{
+    CClient *client = new CDextraOpenClient(callsign, ip, reflectormodule, revision);
+    return client;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
