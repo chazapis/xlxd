@@ -102,7 +102,7 @@ void CDvHeaderPacket::ConvertToDstarStruct(struct dstar_header *buffer, uint8 Co
     ::memset(buffer, 0, sizeof(struct dstar_header));
     buffer->Flag1 = m_uiFlag1;
     buffer->Flag2 = m_uiFlag2;
-    buffer->Flag3 = (mCodecOut == CODEC_AMBEPLUS) ? 0x00 : 0x01 ;
+    buffer->Flag3 = (CodecOut == CODEC_AMBEPLUS) ? 0x00 : 0x01 ;
     m_csUR.GetCallsign(buffer->UR);
     m_csRPT1.GetCallsign(buffer->RPT1);
     m_csRPT2.GetCallsign(buffer->RPT2);

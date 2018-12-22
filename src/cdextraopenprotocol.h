@@ -61,7 +61,10 @@ public:
     
     // destructor
     virtual ~CDextraOpenProtocol() {};
-    
+
+    // initialization
+    bool Init(void);
+
     // identity
     int GetProtocol(void) const { return PROTOCOL_DEXTRA_OPEN; }
 

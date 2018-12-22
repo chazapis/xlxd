@@ -57,7 +57,7 @@ bool CDextraOpenProtocol::Init(void)
 ////////////////////////////////////////////////////////////////////////////////////////
 // packet encoding helpers
 
-bool CDextraProtocol::EncodeDvHeaderPacket(const CDvHeaderPacket &Packet, CBuffer *Buffer) const
+bool CDextraOpenProtocol::EncodeDvHeaderPacket(const CDvHeaderPacket &Packet, CBuffer *Buffer) const
 {
     uint8 tag[] = { 'D','S','V','T',0x10,0x00,0x00,0x00,0x20,0x00,0x01,0x02 };
     struct dstar_header DstarHeader;
@@ -72,7 +72,7 @@ bool CDextraProtocol::EncodeDvHeaderPacket(const CDvHeaderPacket &Packet, CBuffe
     return true;
 }
 
-bool CDextraProtocol::EncodeDvFramePacket(const CDvFramePacket &Packet, CBuffer *Buffer) const
+bool CDextraOpenProtocol::EncodeDvFramePacket(const CDvFramePacket &Packet, CBuffer *Buffer) const
 {
     uint8 tag[] = { 'D','S','V','T',0x20,0x00,0x00,0x00,0x20,0x00,0x01,0x02 };
     

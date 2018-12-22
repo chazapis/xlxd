@@ -108,7 +108,7 @@ const uint8 *CDvFramePacket::GetAmbe(uint8 uiCodec) const
     {
         case CODEC_AMBEPLUS:    return m_uiAmbe;
         case CODEC_AMBE2PLUS:   return m_uiAmbePlus;
-        case CODEC_CODEC2:      return m_iuCodec2;
+        case CODEC_CODEC2:      return m_uiCodec2;
         default:                return NULL;
     }
 }
