@@ -85,7 +85,7 @@ protected:
     uint16          m_uiPort;
     uint8           m_uiPid;
     uint8           m_uiCodecIn;
-    uint8           m_uiCodecOut;
+    uint8           m_uiCodecsOut;
 
     // socket
     CIp             m_Ip;

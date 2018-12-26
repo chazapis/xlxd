@@ -36,14 +36,14 @@
 ////////////////////////////////////////////////////////////////////////////////////////
 // constructor
 
-CCodecStream::CCodecStream(CPacketStream *PacketStream, uint16 uiId, uint8 uiCodecIn, uint8 uiCodecOut)
+CCodecStream::CCodecStream(CPacketStream *PacketStream, uint16 uiId, uint8 uiCodecIn, uint8 uiCodecsOut)
 {
     m_bStopThread = false;
     m_pThread = NULL;
     m_uiStreamId = uiId;
     m_uiPid = 0;
     m_uiCodecIn = uiCodecIn;
-    m_uiCodecOut = uiCodecOut;
+    m_uiCodecsOut = uiCodecsOut;
     m_bConnected = false;
     m_fPingMin = -1;
     m_fPingMax = -1;
@@ -191,6 +191,7 @@ void CCodecStream::Task(void)
                 m_LocalQueue.pop();
                 // todo: check the PID
                 // update content with transcoded ambe
+                // XXX Update with two transcoded packets...
                 Packet->SetAmbe(m_uiCodecOut, Ambe);
                 // tag syncs in DvData
                 if ( (m_uiCodecOut == CODEC_AMBEPLUS) && (Packet->GetPacketId() % 21) == 0 )
@@ -244,7 +245,8 @@ bool CCodecStream::IsValidAmbePacket(const CBuffer &Buffer, uint8 *Ambe)
 {
     bool valid = false;
     
-    if ( (Buffer.size() == 11) && (Buffer.data()[0] == m_uiCodecOut) )
+    // XXX Get two transcooded packets...
+    if ( (Buffer.size() == 11) && (Buffer.data()[0] == m_uiCodecsOut) )
     {
         ::memcpy(Ambe, &(Buffer.data()[2]), 9);
         valid = true;

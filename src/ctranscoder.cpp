@@ -226,7 +226,7 @@ CCodecStream *CTranscoder::GetStream(CPacketStream *PacketStream, uint8 uiCodecI
                     std::cout << "ambed openstream ok" << std::endl;
                 
                     // create stream object
-                    stream = new CCodecStream(PacketStream, m_StreamidOpenStream, uiCodecIn, (uiCodecIn == CODEC_AMBEPLUS) ? CODEC_AMBE2PLUS : CODEC_AMBEPLUS);
+                    stream = new CCodecStream(PacketStream, m_StreamidOpenStream, uiCodecIn, CODEC_ALL ^ CodecIn);
                     
                     // init it
                     if ( stream->Init(m_PortOpenStream) )

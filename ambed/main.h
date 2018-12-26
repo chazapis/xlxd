@@ -66,6 +66,8 @@
 #define CODEC_NONE                      0
 #define CODEC_AMBEPLUS                  1
 #define CODEC_AMBE2PLUS                 2
+#define CODEC_CODEC2                    4
+#define CODEC_ALL                       7                                   // all available bits set
 
 // Transcoding speech gains
 #define CODECGAIN_AMBEPLUS              -10                                  // in dB

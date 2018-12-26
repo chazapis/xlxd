@@ -267,7 +267,7 @@ bool CVocodecs::DiscoverFtdiDevices(void)
 ////////////////////////////////////////////////////////////////////////////////////////
 // manage channels
 
-CVocodecChannel *CVocodecs::OpenChannel(uint8 uiCodecIn, uint8 uiCodecOut)
+CVocodecChannel *CVocodecs::OpenChannel(uint8 uiCodecIn, uint8 uiCodecsOut)
 {
     CVocodecChannel *Channel = NULL;
     bool done = false;
@@ -278,7 +278,7 @@ CVocodecChannel *CVocodecs::OpenChannel(uint8 uiCodecIn, uint8 uiCodecOut)
     {
         if ( !m_Channels[i]->IsOpen() &&
              (m_Channels[i]->GetCodecIn() == uiCodecIn) &&
-             (m_Channels[i]->GetCodecOut() == uiCodecOut) )
+             (m_Channels[i]->GetCodecsOut() == uiCodecsOut) )
         {
             if ( m_Channels[i]->Open() )
             {

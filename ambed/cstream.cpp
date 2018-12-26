@@ -50,14 +50,14 @@ CStream::CStream()
     m_iLostPackets = 0;
 }
 
-CStream::CStream(uint16 uiId, const CCallsign &Callsign, const CIp &Ip, uint8 uiCodecIn, uint8 uiCodecOut)
+CStream::CStream(uint16 uiId, const CCallsign &Callsign, const CIp &Ip, uint8 uiCodecIn, uint8 uiCodecsOut)
 {
     m_uiId = uiId;
     m_Callsign = Callsign;
     m_Ip = Ip;
     m_uiPort = 0;
     m_uiCodecIn = uiCodecIn;
-    m_uiCodecOut = uiCodecOut;
+    m_uiCodecsOut = uiCodecsOut;
     m_bStopThread = false;
     m_pThread = NULL;
     m_VocodecChannel = NULL;
@@ -101,7 +101,7 @@ bool CStream::Init(uint16 uiPort)
     if ( ok )
     {
         // open the vocodecchannel
-        ok &= ((m_VocodecChannel = g_Vocodecs.OpenChannel(m_uiCodecIn, m_uiCodecOut)) != NULL);
+        ok &= ((m_VocodecChannel = g_Vocodecs.OpenChannel(m_uiCodecIn, m_uiCodecsOut)) != NULL);
         
         if ( ok )
         {
@@ -195,6 +195,7 @@ void CStream::Task(void)
     }
     
     // anything in our queue ?
+    // XXX Get two transcoded packets...
     queue = m_VocodecChannel->GetPacketQueueOut();
     while ( !queue->empty() )
     {
@@ -233,8 +234,9 @@ bool CStream::IsValidDvFramePacket(const CBuffer &Buffer, uint8 *pid, uint8 *amb
 
 void CStream::EncodeDvFramePacket(CBuffer *Buffer, uint8 Pid, uint8 *Ambe)
 {
+    // XXX Encode two transocded packets...
     Buffer->clear();
-    Buffer->Append((uint8)GetCodecOut());
+    Buffer->Append((uint8)GetCodecsOut());
     Buffer->Append((uint8)Pid);
     Buffer->Append(Ambe, 9);
 }

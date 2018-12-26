@@ -50,7 +50,7 @@ public:
     uint16  GetId(void) const           { return m_uiId; }
     uint16  GetPort(void) const         { return m_uiPort; }
     uint8   GetCodecIn(void) const      { return m_uiCodecIn; }
-    uint8   GetCodecOut(void) const     { return m_uiCodecOut; }
+    uint8   GetCodecsOut(void) const    { return m_uiCodecsOut; }
     
     // activity timer
     bool    IsActive(void) const        { return m_LastActivity.DurationSinceNow() <= STREAM_ACTIVITY_TIMEOUT; }
@@ -73,7 +73,7 @@ protected:
     CUdpSocket      m_Socket;
     uint16          m_uiPort;
     uint8           m_uiCodecIn;
-    uint8           m_uiCodecOut;
+    uint8           m_uiCodecsOut;
     CVocodecChannel *m_VocodecChannel;
     
     // client details

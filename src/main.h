@@ -127,7 +127,8 @@
 #define CODEC_NONE          0
 #define CODEC_AMBEPLUS      1                                               // DStar
 #define CODEC_AMBE2PLUS     2                                               // DMR
-#define CODEC_CODEC2        3                                               // Codec 2
+#define CODEC_CODEC2        4                                               // Codec 2
+#define CODEC_ALL           7                                               // all available bits set
 
 
 // DMRid database -----------------------------------------------
