@@ -1,8 +1,8 @@
 //
-//  cusb3000interface.h
+//  ccodec2interface.h
 //  ambed
 //
-//  Created by Jean-Luc Deltombe (LX3JL) on 21/08/2017.
+//  Created by Antony Chazapis (SV9OAN) on 26/12/2018.
 //  Copyright © 2015 Jean-Luc Deltombe (LX3JL). All rights reserved.
 //
 // ----------------------------------------------------------------------------
@@ -22,55 +22,47 @@
 //    along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 // ----------------------------------------------------------------------------
 
-#ifndef cusb3000interface_h
-#define cusb3000interface_h
+#ifndef ccodec2interface_h
+#define ccodec2interface_h
 
-
-#include "ftd2xx.h"
-#include "cbuffer.h"
-#include "cusb3xxxinterface.h"
-
-////////////////////////////////////////////////////////////////////////////////////////
-// define
-
-#define USB3000_NB_CH       1
+#include "cvocodecinterface.h"
+#include <codec2/codec2.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////
 // class
 
-class CUsb3000Interface : public CUsb3xxxInterface
+class CCodec2Interface : public CVocodecInterface
 {
 public:
     // constructors
-    CUsb3000Interface(uint32, uint32, const char *, const char *);
+    CCodec2Interface();
     
     // destructor
-    virtual ~CUsb3000Interface() {}
+    virtual ~CCodec2Interface();
     
     // initialization
-    bool Init(uint8);
+    bool Init(void);
+
+    // get
+    const char *GetName(void) const     { return "Codec 2"; }
     
     // manage channels
-    int GetNbChannels(void) const       { return USB3000_NB_CH; }
-    uint8 GetChannelCodec(int) const;
-    
+    int   GetNbChannels(void) const     { return 1; }
+    uint8 GetChannelCodec(int) const    { return CODEC_CODEC2; }
+
+    // task
+    void Task(void) {};
+
 protected:
     // decoder helper
-    bool IsValidChannelPacket(const CBuffer &, int *, CAmbePacket *);
-    bool IsValidSpeechPacket(const CBuffer &, int *, CVoicePacket *);
+    bool DecodeAmbePacket(CAmbePacket *, CVoicePacket *);
     
     // encoder helpers
-    void EncodeChannelPacket(CBuffer *, int, CAmbePacket *);
-    void EncodeSpeechPacket(CBuffer *, int, CVoicePacket *);
-    
-    // low level
-    bool OpenDevice(void);
-    bool ResetDevice(void);
-    bool ConfigureDevice(void);
-    
+    void EncodeVoicePacket(CVoicePacket *, CAmbePacket *);
+
     // data
-    uint8   m_uiChCodec;
+    struct CODEC2 *codec2_state;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////
-#endif /* cusb3000interface_h */
+#endif /* ccodec2interface_h */

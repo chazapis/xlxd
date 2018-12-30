@@ -61,6 +61,13 @@ CVocodecInterface::~CVocodecInterface()
 
 bool CVocodecInterface::Init(void)
 {
+    // no open channel state
+    for ( int i = 0; i < GetNbChannels(); i++ )
+    {
+        m_ChannelIn.push_back(NULL);
+        m_ChannelOut.push_back(NULL);
+    }
+
     // reset stop flag
     m_bStopThread = false;
     
@@ -92,4 +99,29 @@ void CVocodecInterface::AddChannel(CVocodecChannel *Channel)
     m_Channels.push_back(Channel);
 }
 
+
+////////////////////////////////////////////////////////////////////////////////////////
+// manage open Channel state
+
+void CVocodecInterface::SetChannelWithChannelIn(CVocodecChannel *Channel, int iCh)
+{
+    m_ChannelIn[iCh] = Channel;
+    m_ChannelOut[iCh] = NULL;
+}
+
+void CVocodecInterface::SetChannelWithChannelOut(CVocodecChannel *Channel, int iCh)
+{
+    m_ChannelIn[iCh] = NULL;
+    m_ChannelOut[iCh] = Channel;
+}
+
+CVocodecChannel *CVocodecInterface::GetChannelWithChannelIn(int iCh)
+{
+    return m_ChannelIn[iCh];
+}
+
+CVocodecChannel *CVocodecInterface::GetChannelWithChannelOut(int iCh)
+{
+    return m_ChannelOut[iCh];
+}
 
