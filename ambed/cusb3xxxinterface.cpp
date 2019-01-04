@@ -152,7 +152,7 @@ void CUsb3xxxInterface::Task(void)
             {
                 CVoicePacket *clone1 = new CVoicePacket(VoicePacket);
                 clone1->ApplyGain(Channel->GetSpeechGain());
-                CVoicePacket *clone2 = new CVoicePacket(clone1);
+                CVoicePacket *clone2 = new CVoicePacket(*clone1);
 
                 Queue = Channel->GetVoiceQueue1();
                 Queue->push(clone1);

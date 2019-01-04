@@ -196,7 +196,7 @@ void CStream::Task(void)
     
     // anything in our queue ?
     // XXX Get two transcoded packets...
-    queue = m_VocodecChannel->GetPacketQueueOut();
+    queue = m_VocodecChannel->GetPacketQueueOut1();
     while ( !queue->empty() )
     {
         // get the packet
@@ -208,7 +208,7 @@ void CStream::Task(void)
         // and done
         delete packet;
     }
-    m_VocodecChannel->ReleasePacketQueueOut();
+    m_VocodecChannel->ReleasePacketQueueOut1();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////

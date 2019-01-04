@@ -51,11 +51,11 @@ public:
     uint8 GetChannelCodec(int) const    { return CODEC_CODEC2; }
 
     // task
-    void Task(void) {};
+    void Task(void);
 
 protected:
     // decoder helper
-    bool DecodeAmbePacket(CAmbePacket *, CVoicePacket *);
+    void DecodeAmbePacket(CAmbePacket *, CVoicePacket *);
     
     // encoder helpers
     void EncodeVoicePacket(CVoicePacket *, CAmbePacket *);

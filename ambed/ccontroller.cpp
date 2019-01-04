@@ -303,7 +303,7 @@ bool CController::IsValidOpenstreamPacket(const CBuffer &Buffer, CCallsign *Call
         // get callsign here
         Callsign->SetCallsign(&(Buffer.data()[7]), 8);
         *CodecIn = Buffer.data()[15];
-        *CodecOut = Buffer.data()[16];
+        *CodecsOut = Buffer.data()[16];
         
         // valid ?
         valid = Callsign->IsValid() && IsValidCodecIn(*CodecIn) && IsValidCodecsOut(*CodecsOut);

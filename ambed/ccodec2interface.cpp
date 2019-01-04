@@ -25,10 +25,10 @@
 #include "main.h"
 #include <string.h>
 #include "ctimepoint.h"
-#include "ccodec2interface.h"
-#include "cvocodecchannel.h"
 #include "cambepacket.h"
 #include "cvoicepacket.h"
+#include "ccodec2interface.h"
+#include "cvocodecchannel.h"
 
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -109,8 +109,8 @@ void CCodec2Interface::Task(void)
                     // this is second step of transcoding
                     // we just received from a decoded speech packet
                     // encode and cpush back to relevant channel outcoming queue
-                    EncodeAmbePacket(Packet, &AmbePacket);
-                    AmbePacket->SetPid(Packet->GetPid);
+                    EncodeVoicePacket(Packet, &AmbePacket);
+                    AmbePacket.SetPid(Packet->GetPid());
                     delete Packet;
 
                     CAmbePacket *clone = new CAmbePacket(AmbePacket);
@@ -143,8 +143,8 @@ void CCodec2Interface::Task(void)
                     // this is second step of transcoding
                     // we just received from a decoded speech packet
                     // encode and cpush back to relevant channel outcoming queue
-                    EncodeAmbePacket(Packet, &AmbePacket);
-                    AmbePacket->SetPid(Packet->GetPid);
+                    EncodeVoicePacket(Packet, &AmbePacket);
+                    AmbePacket.SetPid(Packet->GetPid());
                     delete Packet;
 
                     CAmbePacket *clone = new CAmbePacket(AmbePacket);
@@ -181,12 +181,12 @@ void CCodec2Interface::Task(void)
                     // a fresh new packet to be transcoded is showing up
                     // decode and copy the result into both voice queues
                     DecodeAmbePacket(Packet, &VoicePacket);
-                    VoicePacket->SetPid(Packet->GetPid);
+                    VoicePacket.SetPid(Packet->GetPid());
                     delete Packet;
 
                     CVoicePacket *clone1 = new CVoicePacket(VoicePacket);
                     clone1->ApplyGain(Channel->GetSpeechGain());
-                    CVoicePacket *clone2 = new CVoicePacket(clone1);
+                    CVoicePacket *clone2 = new CVoicePacket(*clone1);
 
                     Queue = Channel->GetVoiceQueue1();
                     Queue->push(clone1);

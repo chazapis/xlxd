@@ -51,6 +51,7 @@ public:
     uint8 GetCodecIn(void) const;
     uint8 GetCodecOut1(void) const;
     uint8 GetCodecOut2(void) const;
+    uint8 GetCodecsOut(void) const;
     int   GetChannelIn(void) const          { return m_iChannelIn; }
     int   GetChannelOut1(void) const        { return m_iChannelOut1; }
     int   GetChannelOut2(void) const        { return m_iChannelOut2; }

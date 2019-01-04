@@ -62,12 +62,12 @@ bool CVocodecChannel::Open(void)
         m_bOpen = true;
         ok = true;
         PurgeAllQueues();
-        m_InterfaceIn->SetChannelWithChannelIn(self, m_iChannelIn);
-        m_InterfaceOut1->SetChannelWithChannelOut(self, m_iChannelOut1);
-        m_InterfaceOut2->SetChannelWithChannelOut(self, m_iChannelOut2);
+        m_InterfaceIn->SetChannelWithChannelIn(this, m_iChannelIn);
+        m_InterfaceOut1->SetChannelWithChannelOut(this, m_iChannelOut1);
+        m_InterfaceOut2->SetChannelWithChannelOut(this, m_iChannelOut2);
         std::cout << "Vocodec channel " <<
             m_InterfaceIn->GetName() << ":" << (int)m_iChannelIn << " -> " <<
-            m_InterfaceOut1->GetName() << ":" << (int)m_iChannelOut1 << ", "
+            m_InterfaceOut1->GetName() << ":" << (int)m_iChannelOut1 << ", " <<
             m_InterfaceOut2->GetName() << ":" << (int)m_iChannelOut2 << " open" << std::endl;
     }
     return ok;
@@ -83,9 +83,9 @@ void CVocodecChannel::Close(void)
         m_InterfaceOut1->SetChannelWithChannelOut(NULL, m_iChannelOut1);
         m_InterfaceOut2->SetChannelWithChannelOut(NULL, m_iChannelOut2);
         std::cout << "Vocodec channel " <<
-        m_InterfaceIn->GetName() << ":" << (int)m_iChannelIn << " -> " <<
-        m_InterfaceOut1->GetName() << ":" << (int)m_iChannelOut1 << ", " << std::endl;
-        m_InterfaceOut2->GetName() << ":" << (int)m_iChannelOut2 << " closed" << std::endl;
+            m_InterfaceIn->GetName() << ":" << (int)m_iChannelIn << " -> " <<
+            m_InterfaceOut1->GetName() << ":" << (int)m_iChannelOut1 << ", " <<
+            m_InterfaceOut2->GetName() << ":" << (int)m_iChannelOut2 << " closed" << std::endl;
     }
 }
 
@@ -105,6 +105,11 @@ uint8 CVocodecChannel::GetCodecOut1(void) const
 uint8 CVocodecChannel::GetCodecOut2(void) const
 {
     return m_InterfaceOut2->GetChannelCodec(m_iChannelOut2);
+}
+
+uint8 CVocodecChannel::GetCodecsOut(void) const
+{
+    return GetCodecOut1() | GetCodecOut2();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////

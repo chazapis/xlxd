@@ -75,7 +75,7 @@ void CVoicePacket::SetVoice(const uint8 *voice, int size)
 
 void CVoicePacket::ApplyGain(int dB)
 {
-    if ( db == 0 )
+    if ( dB == 0 )
     {
         return;
     }
