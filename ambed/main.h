@@ -70,8 +70,9 @@
 #define CODEC_ALL                       7                                   // all available bits set
 
 // Transcoding speech gains
-#define CODECGAIN_AMBEPLUS              -10                                  // in dB
+#define CODECGAIN_AMBEPLUS              -10                                 // in dB
 #define CODECGAIN_AMBE2PLUS             +10                                 // in dB
+#define CODECGAIN_CODEC2                0                                   // in dB
 
 // Timeouts -----------------------------------------------------
 #define STREAM_ACTIVITY_TIMEOUT         3                                   // in seconds

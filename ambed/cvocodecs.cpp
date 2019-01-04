@@ -200,13 +200,14 @@ bool CVocodecs::Init(void)
     
     
     // done
+    iNbCh /= 3;
     if ( ok )
     {
-        std::cout << "Codec interfaces initialized successfully : " << iNbCh << " channels available" << std::endl;
+        std::cout << "Codec interfaces initialized successfully : " << iNbCh << " channel triplet" << ( iNbCh > 1 ? "s" : "" ) << " available" << std::endl;
     }
     else
     {
-        std::cout << "At least one codec interfaces failed to initialize : " << iNbCh << " channels availables" << std::endl;
+        std::cout << "At least one codec interfaces failed to initialize : " << iNbCh << " channel triplet" << ( iNbCh > 1 ? "s" : "" ) << " available" << std::endl;
     }
     // done
     return ok;
