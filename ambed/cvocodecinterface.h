@@ -66,6 +66,7 @@ public:
         
 protected:
     // open channel state
+    std::mutex                      m_MutexChannels;
     std::vector<CVocodecChannel *>  m_ChannelIn;
     std::vector<CVocodecChannel *>  m_ChannelOut;
 

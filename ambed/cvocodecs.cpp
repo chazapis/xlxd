@@ -296,5 +296,7 @@ CVocodecChannel *CVocodecs::OpenChannel(uint8 uiCodecIn, uint8 uiCodecsOut)
 
 void CVocodecs::CloseChannel(CVocodecChannel *Channel)
 {
+    m_MutexChannels.lock();
     Channel->Close();
+    m_MutexChannels.unlock();
 }
