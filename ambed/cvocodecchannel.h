@@ -42,9 +42,12 @@ public:
     // destructor
     virtual ~CVocodecChannel();
     
+    // manage group
+    void AddGroupChannel(CVocodecChannel *);
+    bool IsAvailable(void) const;
+
     // open & close
     bool Open(void);
-    bool IsOpen(void) const                 { return m_bOpen; }
     void Close(void);
     
     // get
@@ -83,26 +86,29 @@ protected:
     
 protected:
     // status
-    bool                m_bOpen;
+    bool                            m_bOpen;
+
+    // array of grouped channels
+    std::vector<CVocodecChannel *>  m_GroupChannels;
 
     // connected interfaces
-    CVocodecInterface   *m_InterfaceIn;
-    int                 m_iChannelIn;
-    CVocodecInterface   *m_InterfaceOut1;
-    int                 m_iChannelOut1;
-    CVocodecInterface   *m_InterfaceOut2;
-    int                 m_iChannelOut2;
+    CVocodecInterface               *m_InterfaceIn;
+    int                             m_iChannelIn;
+    CVocodecInterface               *m_InterfaceOut1;
+    int                             m_iChannelOut1;
+    CVocodecInterface               *m_InterfaceOut2;
+    int                             m_iChannelOut2;
     
     // ambe queues
-    CPacketQueue        m_QueuePacketIn;
-    CPacketQueue        m_QueuePacketOut1;
-    CPacketQueue        m_QueuePacketOut2;
+    CPacketQueue                    m_QueuePacketIn;
+    CPacketQueue                    m_QueuePacketOut1;
+    CPacketQueue                    m_QueuePacketOut2;
     // voice queues
-    CPacketQueue        m_QueueVoice1;
-    CPacketQueue        m_QueueVoice2;
+    CPacketQueue                    m_QueueVoice1;
+    CPacketQueue                    m_QueueVoice2;
     
     // settings
-    int                 m_iSpeechGain;
+    int                             m_iSpeechGain;
     
 };
 

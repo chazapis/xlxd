@@ -50,7 +50,6 @@ public:
     // manage channels
     virtual int   GetNbChannels(void) const                     { return 0; }
     virtual uint8 GetChannelCodec(int) const                    { return CODEC_NONE; }
-    void  AddChannel(CVocodecChannel *);
 
     // manage open channel state
     void SetChannelWithChannelIn(CVocodecChannel *, int);
@@ -66,9 +65,6 @@ public:
     virtual bool operator ==(const CVocodecInterface &) const   { return false; }
         
 protected:
-    // array of channels
-    std::vector<CVocodecChannel *>  m_Channels;
-
     // open channel state
     std::vector<CVocodecChannel *>  m_ChannelIn;
     std::vector<CVocodecChannel *>  m_ChannelOut;

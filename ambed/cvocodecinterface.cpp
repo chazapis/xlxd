@@ -33,7 +33,6 @@
 
 CVocodecInterface::CVocodecInterface()
 {
-    m_Channels.reserve(5);
     m_bStopThread = false;
     m_pThread = NULL;
 }
@@ -43,10 +42,6 @@ CVocodecInterface::CVocodecInterface()
 
 CVocodecInterface::~CVocodecInterface()
 {
-    // empty channel array
-    // chennels are deleted by their owner (CVocodecs)
-    m_Channels.clear();
-    
     // stop thread
     m_bStopThread = true;
     if ( m_pThread != NULL )
@@ -88,15 +83,6 @@ void CVocodecInterface::Thread(CVocodecInterface *This)
     {
         This->Task();
     }
-}
-
-
-////////////////////////////////////////////////////////////////////////////////////////
-// manage Channels
-
-void CVocodecInterface::AddChannel(CVocodecChannel *Channel)
-{
-    m_Channels.push_back(Channel);
 }
 
 

@@ -34,6 +34,7 @@
 CVocodecChannel::CVocodecChannel(CVocodecInterface *InterfaceIn, int iChIn, CVocodecInterface *InterfaceOut1, int iChOut1, CVocodecInterface *InterfaceOut2, int iChOut2, int iSpeechGain)
 {
     m_bOpen = false;
+    m_GroupChannels.reserve(2);
     m_InterfaceIn = InterfaceIn;
     m_iChannelIn = iChIn;
     m_InterfaceOut1 = InterfaceOut1;
@@ -48,7 +49,39 @@ CVocodecChannel::CVocodecChannel(CVocodecInterface *InterfaceIn, int iChIn, CVoc
 
 CVocodecChannel::~CVocodecChannel()
 {
+    // empty array of grouped channels
+    // channels are deleted by their owner (CVocodecs)
+    m_GroupChannels.clear();
+
     PurgeAllQueues();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////
+// manage group
+
+void CVocodecChannel::AddGroupChannel(CVocodecChannel *Channel)
+{
+    m_GroupChannels.push_back(Channel);
+}
+
+bool CVocodecChannel::IsAvailable(void) const
+{
+    if ( m_bOpen )
+    {
+        return false;
+    }
+
+    bool available = true;
+
+    for ( int i = 0; (i < m_GroupChannels.size()) && available; i++ )
+    {
+        if ( m_GroupChannels[i]->m_bOpen )
+        {
+            available = false;
+        }
+    }
+
+    return available;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////

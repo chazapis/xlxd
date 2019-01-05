@@ -195,6 +195,25 @@ int CFtdiDeviceDescr::GetNbChannels(void) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
+// factory helper
+
+void CFtdiDeviceDescr::CreateChannelGroup(CVocodecInterface *InterfaceAmbe, int ChannelAmbe, CVocodecInterface *InterfaceAmbePlus, int ChannelAmbePlus, CVocodecInterface *InterfaceCodec2, int ChannelCodec2, std::vector<CVocodecChannel *>*channels)
+{
+    CVocodecChannel *ChannelA = new CVocodecChannel(InterfaceAmbe, ChannelAmbe, InterfaceAmbePlus, ChannelAmbePlus, InterfaceCodec2, ChannelCodec2, CODECGAIN_AMBEPLUS);
+    CVocodecChannel *ChannelB = new CVocodecChannel(InterfaceAmbePlus, ChannelAmbePlus, InterfaceAmbe, ChannelAmbe, InterfaceCodec2, ChannelCodec2, CODECGAIN_AMBE2PLUS);
+    CVocodecChannel *ChannelC = new CVocodecChannel(InterfaceCodec2, ChannelCodec2, InterfaceAmbe, ChannelAmbe, InterfaceAmbePlus, ChannelAmbePlus, CODECGAIN_CODEC2);
+    ChannelA->AddGroupChannel(ChannelB);
+    ChannelA->AddGroupChannel(ChannelC);
+    ChannelB->AddGroupChannel(ChannelA);
+    ChannelB->AddGroupChannel(ChannelC);
+    ChannelC->AddGroupChannel(ChannelA);
+    ChannelC->AddGroupChannel(ChannelB);
+    channels->push_back(ChannelA);
+    channels->push_back(ChannelB);
+    channels->push_back(ChannelC);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////
 // DVSI's USB-3012 factory helper
 //
 //      This device uses 3 AMBE3003 connected on a single FTDI 4 channels
@@ -231,109 +250,15 @@ int CFtdiDeviceDescr::CreateUsb3012(CFtdiDeviceDescr *descr, std::vector<CVocode
          Codec2C->Init() && Codec2D->Init() &&
          Codec2E->Init() && Codec2F->Init() )
     {
-        CVocodecChannel *Channel;
-        CCodec2Interface *Codec2;
-        // create all channel triplets
-        {
-            // ch1a
-            Channel = new CVocodecChannel(Usb3003A, 0, Usb3003A, 1, Codec2A, 0, CODECGAIN_AMBEPLUS);
-            channels->push_back(Channel);
-            Usb3003A->AddChannel(Channel);
-            Codec2A->AddChannel(Channel);
-            // ch1b
-            Channel = new CVocodecChannel(Usb3003A, 1, Usb3003A, 0, Codec2A, 0, CODECGAIN_AMBE2PLUS);
-            channels->push_back(Channel);
-            Usb3003A->AddChannel(Channel);
-            Codec2A->AddChannel(Channel);
-            // ch1c
-            Channel = new CVocodecChannel(Codec2A, 0, Usb3003A, 0, Usb3003A, 1, CODECGAIN_CODEC2);
-            channels->push_back(Channel);
-            Usb3003A->AddChannel(Channel);
-            Codec2A->AddChannel(Channel);
-            // ch2a
-            Channel = new CVocodecChannel(Usb3003B, 0, Usb3003B, 1, Codec2B, 0, CODECGAIN_AMBEPLUS);
-            channels->push_back(Channel);
-            Usb3003B->AddChannel(Channel);
-            Codec2B->AddChannel(Channel);
-            // ch2b
-            Channel = new CVocodecChannel(Usb3003B, 1, Usb3003B, 0, Codec2B, 0, CODECGAIN_AMBE2PLUS);
-            channels->push_back(Channel);
-            Usb3003B->AddChannel(Channel);
-            Codec2B->AddChannel(Channel);
-            // ch2c
-            Channel = new CVocodecChannel(Codec2B, 0, Usb3003B, 0, Usb3003B, 1, CODECGAIN_CODEC2);
-            channels->push_back(Channel);
-            Usb3003B->AddChannel(Channel);
-            Codec2B->AddChannel(Channel);
-            // ch3a
-            Channel = new CVocodecChannel(Usb3003A, 2, Usb3003B, 2, Codec2C, 0, CODECGAIN_AMBEPLUS);
-            channels->push_back(Channel);
-            Usb3003A->AddChannel(Channel);
-            Usb3003B->AddChannel(Channel);
-            Codec2C->AddChannel(Channel);
-            // ch3b
-            Channel = new CVocodecChannel(Usb3003B, 2, Usb3003A, 2, Codec2C, 0, CODECGAIN_AMBE2PLUS);
-            channels->push_back(Channel);
-            Usb3003A->AddChannel(Channel);
-            Usb3003B->AddChannel(Channel);
-            Codec2C->AddChannel(Channel);
-            // ch3c
-            Channel = new CVocodecChannel(Codec2C, 0, Usb3003A, 2, Usb3003B, 2, CODECGAIN_CODEC2);
-            channels->push_back(Channel);
-            Usb3003A->AddChannel(Channel);
-            Usb3003B->AddChannel(Channel);
-            Codec2C->AddChannel(Channel);
-            // ch4a
-            Channel = new CVocodecChannel(Usb3003C, 0, Usb3003C, 1, Codec2D, 0, CODECGAIN_AMBEPLUS);
-            channels->push_back(Channel);
-            Usb3003C->AddChannel(Channel);
-            Codec2D->AddChannel(Channel);
-            // ch4b
-            Channel = new CVocodecChannel(Usb3003C, 1, Usb3003C, 0, Codec2D, 0, CODECGAIN_AMBE2PLUS);
-            channels->push_back(Channel);
-            Usb3003C->AddChannel(Channel);
-            Codec2D->AddChannel(Channel);
-            // ch4c
-            Channel = new CVocodecChannel(Codec2D, 0, Usb3003C, 0, Usb3003C, 1, CODECGAIN_CODEC2);
-            channels->push_back(Channel);
-            Usb3003C->AddChannel(Channel);
-            Codec2D->AddChannel(Channel);
-            // ch5a
-            Channel = new CVocodecChannel(Usb3003D, 0, Usb3003D, 1, Codec2E, 0, CODECGAIN_AMBEPLUS);
-            channels->push_back(Channel);
-            Usb3003D->AddChannel(Channel);
-            Codec2E->AddChannel(Channel);
-            // ch5b
-            Channel = new CVocodecChannel(Usb3003D, 1, Usb3003D, 0, Codec2E, 0, CODECGAIN_AMBE2PLUS);
-            channels->push_back(Channel);
-            Usb3003D->AddChannel(Channel);
-            Codec2E->AddChannel(Channel);
-            // ch5c
-            Channel = new CVocodecChannel(Codec2E, 0, Usb3003D, 0, Usb3003D, 1, CODECGAIN_CODEC2);
-            channels->push_back(Channel);
-            Usb3003D->AddChannel(Channel);
-            Codec2E->AddChannel(Channel);
-            // ch6a
-            Channel = new CVocodecChannel(Usb3003C, 2, Usb3003D, 2, Codec2F, 0, CODECGAIN_AMBEPLUS);
-            channels->push_back(Channel);
-            Usb3003C->AddChannel(Channel);
-            Usb3003D->AddChannel(Channel);
-            Codec2F->AddChannel(Channel);
-            // ch6b
-            Channel = new CVocodecChannel(Usb3003D, 2, Usb3003C, 2, Codec2F, 0, CODECGAIN_AMBE2PLUS);
-            channels->push_back(Channel);
-            Usb3003C->AddChannel(Channel);
-            Usb3003D->AddChannel(Channel);
-            Codec2F->AddChannel(Channel);
-            // ch6c
-            Channel = new CVocodecChannel(Codec2F, 0, Usb3003C, 2, Usb3003D, 2, CODECGAIN_CODEC2);
-            channels->push_back(Channel);
-            Usb3003C->AddChannel(Channel);
-            Usb3003D->AddChannel(Channel);
-            Codec2F->AddChannel(Channel);
-            // done
-            nStreams = 18;
-        }
+        // create the channels in groups
+        CreateChannelGroup(Usb3003A, 0, Usb3003A, 1, Codec2A, 0, channels);
+        CreateChannelGroup(Usb3003B, 0, Usb3003B, 1, Codec2B, 0, channels);
+        CreateChannelGroup(Usb3003A, 2, Usb3003B, 2, Codec2C, 0, channels);
+        CreateChannelGroup(Usb3003C, 0, Usb3003C, 1, Codec2D, 0, channels);
+        CreateChannelGroup(Usb3003D, 0, Usb3003D, 1, Codec2E, 0, channels);
+        CreateChannelGroup(Usb3003C, 2, Usb3003D, 2, Codec2F, 0, channels);
+        // done
+        nStreams = 18;
     }
     else
     {
@@ -380,60 +305,12 @@ int CFtdiDeviceDescr::CreateUsb3006(CFtdiDeviceDescr *descr, std::vector<CVocode
     if ( Usb3003A->Init(CODEC_AMBEPLUS) && Usb3003B->Init(CODEC_AMBE2PLUS) &&
          Codec2A->Init() && Codec2B->Init() && Codec2C->Init() )
     {
-        CVocodecChannel *Channel;
-        // create all channels
-        {
-            // ch1a
-            Channel = new CVocodecChannel(Usb3003A, 0, Usb3003A, 1, Codec2A, 0, CODECGAIN_AMBEPLUS);
-            channels->push_back(Channel);
-            Usb3003A->AddChannel(Channel);
-            Codec2A->AddChannel(Channel);
-            // ch1b
-            Channel = new CVocodecChannel(Usb3003A, 1, Usb3003A, 0, Codec2A, 0, CODECGAIN_AMBE2PLUS);
-            channels->push_back(Channel);
-            Usb3003A->AddChannel(Channel);
-            Codec2A->AddChannel(Channel);
-            // ch1c
-            Channel = new CVocodecChannel(Codec2A, 0, Usb3003A, 0, Usb3003A, 1, CODECGAIN_CODEC2);
-            channels->push_back(Channel);
-            Usb3003A->AddChannel(Channel);
-            Codec2A->AddChannel(Channel);
-            // ch2a
-            Channel = new CVocodecChannel(Usb3003B, 0, Usb3003B, 1, Codec2B, 0, CODECGAIN_AMBEPLUS);
-            channels->push_back(Channel);
-            Usb3003B->AddChannel(Channel);
-            Codec2B->AddChannel(Channel);
-            // ch2b
-            Channel = new CVocodecChannel(Usb3003B, 1, Usb3003B, 0, Codec2B, 0, CODECGAIN_AMBE2PLUS);
-            channels->push_back(Channel);
-            Usb3003B->AddChannel(Channel);
-            Codec2B->AddChannel(Channel);
-            // ch2c
-            Channel = new CVocodecChannel(Codec2B, 0, Usb3003B, 0, Usb3003B, 1, CODECGAIN_CODEC2);
-            channels->push_back(Channel);
-            Usb3003B->AddChannel(Channel);
-            Codec2B->AddChannel(Channel);
-            // ch3a
-            Channel = new CVocodecChannel(Usb3003A, 2, Usb3003B, 2, Codec2C, 0, CODECGAIN_AMBEPLUS);
-            channels->push_back(Channel);
-            Usb3003A->AddChannel(Channel);
-            Usb3003B->AddChannel(Channel);
-            Codec2C->AddChannel(Channel);
-            // ch3b
-            Channel = new CVocodecChannel(Usb3003B, 2, Usb3003A, 2, Codec2C, 0, CODECGAIN_AMBE2PLUS);
-            channels->push_back(Channel);
-            Usb3003A->AddChannel(Channel);
-            Usb3003B->AddChannel(Channel);
-            Codec2C->AddChannel(Channel);
-            // ch3c
-            Channel = new CVocodecChannel(Codec2C, 0, Usb3003A, 2, Usb3003B, 2, CODECGAIN_CODEC2);
-            channels->push_back(Channel);
-            Usb3003A->AddChannel(Channel);
-            Usb3003B->AddChannel(Channel);
-            Codec2C->AddChannel(Channel);
-            // done
-            nStreams = 9;
-        }
+        // create the channels in groups
+        CreateChannelGroup(Usb3003A, 0, Usb3003A, 1, Codec2A, 0, channels);
+        CreateChannelGroup(Usb3003B, 0, Usb3003B, 1, Codec2B, 0, channels);
+        CreateChannelGroup(Usb3003A, 2, Usb3003B, 2, Codec2C, 0, channels);
+        // done
+        nStreams = 9;
     }
     else
     {
@@ -473,27 +350,10 @@ int CFtdiDeviceDescr::CreateUsb3003(CFtdiDeviceDescr *descr, std::vector<CVocode
     // init the interface
     if ( (Usb3003 != NULL) && Usb3003->Init(CODEC_NONE) && Codec2->Init() )
     {
-        CVocodecChannel *Channel;
-        // create all channels
-        {
-            // ch1a
-            Channel = new CVocodecChannel(Usb3003, 0, Usb3003, 1, Codec2, 0, CODECGAIN_AMBEPLUS);
-            channels->push_back(Channel);
-            Usb3003->AddChannel(Channel);
-            Codec2->AddChannel(Channel);
-            // ch1b
-            Channel = new CVocodecChannel(Usb3003, 1, Usb3003, 0, Codec2, 0, CODECGAIN_AMBE2PLUS);
-            channels->push_back(Channel);
-            Usb3003->AddChannel(Channel);
-            Codec2->AddChannel(Channel);
-            // ch1c
-            Channel = new CVocodecChannel(Codec2, 0, Usb3003, 0, Usb3003, 1, CODECGAIN_CODEC2);
-            channels->push_back(Channel);
-            Usb3003->AddChannel(Channel);
-            Codec2->AddChannel(Channel);
-            // done
-            nStreams = 3;
-        }
+        // create the channels in groups
+        CreateChannelGroup(Usb3003, 0, Usb3003, 1, Codec2, 0, channels);
+        // done
+        nStreams = 3;
     }
     else
     {
@@ -520,30 +380,10 @@ int CFtdiDeviceDescr::CreatePair(CUsb3000Interface *Usb3000A, CUsb3000Interface 
     // init the interfaces
     if ( Usb3000A->Init(CODEC_AMBEPLUS) && Usb3000B->Init(CODEC_AMBE2PLUS) && Codec2->Init() )
     {
-        CVocodecChannel *Channel;
-        // create all channels
-        {
-            // ch1a
-            Channel = new CVocodecChannel(Usb3000A, 0, Usb3000B, 0, Codec2, 0, CODECGAIN_AMBEPLUS);
-            channels->push_back(Channel);
-            Usb3000A->AddChannel(Channel);
-            Usb3000B->AddChannel(Channel);
-            Codec2->AddChannel(Channel);
-            // ch1b
-            Channel = new CVocodecChannel(Usb3000B, 0, Usb3000A, 0, Codec2, 0, CODECGAIN_AMBE2PLUS);
-            channels->push_back(Channel);
-            Usb3000A->AddChannel(Channel);
-            Usb3000B->AddChannel(Channel);
-            Codec2->AddChannel(Channel);
-            // ch1c
-            Channel = new CVocodecChannel(Codec2, 0, Usb3000A, 0, Usb3000B, 0, CODECGAIN_CODEC2);
-            channels->push_back(Channel);
-            Usb3000A->AddChannel(Channel);
-            Usb3000B->AddChannel(Channel);
-            Codec2->AddChannel(Channel);
-            // done
-            nStreams = 3;
-        }
+        // create the channels in groups
+        CreateChannelGroup(Usb3000A, 0, Usb3000B, 0, Codec2, 0, channels);
+        // done
+        nStreams = 3;
     }
     else
     {
@@ -574,60 +414,12 @@ int CFtdiDeviceDescr::CreatePair(CUsb3003Interface *Usb3003A, CUsb3003Interface 
     if ( Usb3003A->Init(CODEC_AMBEPLUS) && Usb3003B->Init(CODEC_AMBE2PLUS) &&
          Codec2A->Init() && Codec2B->Init() && Codec2C->Init() )
     {
-        CVocodecChannel *Channel;
-        // create all channels
-        {
-            // ch1a
-            Channel = new CVocodecChannel(Usb3003A, 0, Usb3003A, 1, Codec2A, 0, CODECGAIN_AMBEPLUS);
-            channels->push_back(Channel);
-            Usb3003A->AddChannel(Channel);
-            Codec2A->AddChannel(Channel);
-            // ch1b
-            Channel = new CVocodecChannel(Usb3003A, 1, Usb3003A, 0, Codec2A, 0, CODECGAIN_AMBE2PLUS);
-            channels->push_back(Channel);
-            Usb3003A->AddChannel(Channel);
-            Codec2A->AddChannel(Channel);
-            // ch1c
-            Channel = new CVocodecChannel(Codec2A, 0, Usb3003A, 0, Usb3003A, 1, CODECGAIN_CODEC2);
-            channels->push_back(Channel);
-            Usb3003A->AddChannel(Channel);
-            Codec2A->AddChannel(Channel);
-            // ch2a
-            Channel = new CVocodecChannel(Usb3003B, 0, Usb3003B, 1, Codec2B, 0, CODECGAIN_AMBEPLUS);
-            channels->push_back(Channel);
-            Usb3003B->AddChannel(Channel);
-            Codec2B->AddChannel(Channel);
-            // ch2b
-            Channel = new CVocodecChannel(Usb3003B, 1, Usb3003B, 0, Codec2B, 0, CODECGAIN_AMBE2PLUS);
-            channels->push_back(Channel);
-            Usb3003B->AddChannel(Channel);
-            Codec2B->AddChannel(Channel);
-            // ch2c
-            Channel = new CVocodecChannel(Codec2B, 0, Usb3003B, 0, Usb3003B, 1, CODECGAIN_CODEC2);
-            channels->push_back(Channel);
-            Usb3003B->AddChannel(Channel);
-            Codec2B->AddChannel(Channel);
-            // ch3a
-            Channel = new CVocodecChannel(Usb3003A, 2, Usb3003B, 2, Codec2C, 0, CODECGAIN_AMBEPLUS);
-            channels->push_back(Channel);
-            Usb3003A->AddChannel(Channel);
-            Usb3003B->AddChannel(Channel);
-            Codec2C->AddChannel(Channel);
-            // ch3b
-            Channel = new CVocodecChannel(Usb3003B, 2, Usb3003A, 2, Codec2C, 0, CODECGAIN_AMBE2PLUS);
-            channels->push_back(Channel);
-            Usb3003A->AddChannel(Channel);
-            Usb3003B->AddChannel(Channel);
-            Codec2C->AddChannel(Channel);
-            // ch3c
-            Channel = new CVocodecChannel(Codec2C, 0, Usb3003A, 2, Usb3003B, 2, CODECGAIN_CODEC2);
-            channels->push_back(Channel);
-            Usb3003A->AddChannel(Channel);
-            Usb3003B->AddChannel(Channel);
-            Codec2C->AddChannel(Channel);
-            // done
-            nStreams = 9;
-        }
+        // create the channels in groups
+        CreateChannelGroup(Usb3003A, 0, Usb3003A, 1, Codec2A, 0, channels);
+        CreateChannelGroup(Usb3003B, 0, Usb3003B, 1, Codec2B, 0, channels);
+        CreateChannelGroup(Usb3003A, 2, Usb3003B, 2, Codec2C, 0, channels);
+        // done
+        nStreams = 9;
     }
     else
     {
@@ -658,45 +450,11 @@ int CFtdiDeviceDescr::CreatePair(CUsb3003Interface *Usb3003A, CUsb3000Interface 
     if ( Usb3003A->Init(CODEC_AMBEPLUS) && Usb3000B->Init(CODEC_AMBE2PLUS) &&
          Codec2A->Init() && Codec2B->Init() )
     {
-        CVocodecChannel *Channel;
-        // create all channels
-        {
-            // ch1a
-            Channel = new CVocodecChannel(Usb3003A, 0, Usb3003A, 1, Codec2A, 0, CODECGAIN_AMBEPLUS);
-            channels->push_back(Channel);
-            Usb3003A->AddChannel(Channel);
-            Codec2A->AddChannel(Channel);
-            // ch1b
-            Channel = new CVocodecChannel(Usb3003A, 1, Usb3003A, 0, Codec2A, 0, CODECGAIN_AMBE2PLUS);
-            channels->push_back(Channel);
-            Usb3003A->AddChannel(Channel);
-            Codec2A->AddChannel(Channel);
-            // ch1c
-            Channel = new CVocodecChannel(Codec2A, 0, Usb3003A, 0, Usb3003A, 1, CODECGAIN_CODEC2);
-            channels->push_back(Channel);
-            Usb3003A->AddChannel(Channel);
-            Codec2A->AddChannel(Channel);
-            // ch2a
-            Channel = new CVocodecChannel(Usb3003A, 2, Usb3000B, 0, Codec2B, 0, CODECGAIN_AMBEPLUS);
-            channels->push_back(Channel);
-            Usb3003A->AddChannel(Channel);
-            Usb3000B->AddChannel(Channel);
-            Codec2B->AddChannel(Channel);
-            // ch2b
-            Channel = new CVocodecChannel(Usb3000B, 0, Usb3003A, 2, Codec2B, 0, CODECGAIN_AMBE2PLUS);
-            channels->push_back(Channel);
-            Usb3003A->AddChannel(Channel);
-            Usb3000B->AddChannel(Channel);
-            Codec2B->AddChannel(Channel);
-            // ch2c
-            Channel = new CVocodecChannel(Codec2B, 0, Usb3003A, 2, Usb3000B, 0, CODECGAIN_CODEC2);
-            channels->push_back(Channel);
-            Usb3003A->AddChannel(Channel);
-            Usb3000B->AddChannel(Channel);
-            Codec2B->AddChannel(Channel);
-            // done
-            nStreams = 6;
-        }
+        // create the channels in groups
+        CreateChannelGroup(Usb3003A, 0, Usb3003A, 1, Codec2A, 0, channels);
+        CreateChannelGroup(Usb3003A, 2, Usb3000B, 0, Codec2B, 0, channels);
+        // done
+        nStreams = 6;
     }
     else
     {
