@@ -181,6 +181,7 @@ void CStream::Task(void)
     uint8       Ambe[AMBE_FRAME_SIZE];
     CAmbePacket *packet1;
     CAmbePacket *packet2;
+    CPacketQueue *queue;
     
     // anything coming in from codec client ?
     if ( m_Socket.Receive(&Buffer, &Ip, 1) != -1 )
@@ -193,9 +194,9 @@ void CStream::Task(void)
             m_iTotalPackets++;
             
             // post packet to VocoderChannel
-            packet = new CAmbePacket(uiPid, m_uiCodecIn, Ambe);
+            packet1 = new CAmbePacket(uiPid, m_uiCodecIn, Ambe);
             queue = m_VocodecChannel->GetPacketQueueIn();
-            queue->push(packet);
+            queue->push(packet1);
             m_VocodecChannel->ReleasePacketQueueIn();
         }
     }
@@ -223,12 +224,12 @@ void CStream::Task(void)
     }
     m_VocodecChannel->ReleasePacketQueueOut2();
 
-    while ( !m_QueuePacketOut1->empty() && !m_QueuePacketOut2->empty() )
+    while ( !m_QueuePacketOut1.empty() && !m_QueuePacketOut2.empty() )
     {
-        packet1 = (CAmbePacket *)m_QueuePacketOut1->front();
-        m_QueuePacketOut1->pop();
-        packet2 = (CAmbePacket *)m_QueuePacketOut2->front();
-        m_QueuePacketOut2->pop();
+        packet1 = (CAmbePacket *)m_QueuePacketOut1.front();
+        m_QueuePacketOut1.pop();
+        packet2 = (CAmbePacket *)m_QueuePacketOut2.front();
+        m_QueuePacketOut2.pop();
         // send it to client
         // TODO :
         //      when packet PIDs are preserverd, make sure that they match
@@ -276,7 +277,7 @@ void CStream::EncodeDvFramePacket(CBuffer *Buffer, uint8 Pid, uint8 Codec1, uint
 
 void CStream::PurgeAllQueues(void)
 {
-    m_QueuePacketOut1->Purge();
-    m_QueuePacketOut2->Purge();
+    m_QueuePacketOut1.Purge();
+    m_QueuePacketOut2.Purge();
 }
 

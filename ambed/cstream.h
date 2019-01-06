@@ -64,7 +64,7 @@ protected:
     bool IsValidDvFramePacket(const CBuffer &, uint8 *, uint8 *);
     
     // packet encodeing helpers
-    void EncodeDvFramePacket(CBuffer *, uint8, uint8 *);
+    void EncodeDvFramePacket(CBuffer *, uint8, uint8, uint8 *, uint8, uint8 *);
 
     // queues helpers
     void PurgeAllQueues(void);
