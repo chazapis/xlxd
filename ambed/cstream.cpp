@@ -84,6 +84,8 @@ CStream::~CStream()
         m_pThread->join();
         delete m_pThread;
     }
+
+    PurgeAllQueues();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -105,6 +107,8 @@ bool CStream::Init(uint16 uiPort)
         
         if ( ok )
         {
+            PurgeAllQueues();
+
             // store port
             m_uiPort = uiPort;
             
@@ -149,6 +153,8 @@ void CStream::Close(void)
         m_pThread = NULL;
     }
     
+    PurgeAllQueues();
+
     // report
     std::cout << m_iLostPackets << " of " << m_iTotalPackets << " packets lost" << std::endl;
 }
@@ -173,8 +179,8 @@ void CStream::Task(void)
     static CIp  Ip;
     uint8       uiPid;
     uint8       Ambe[AMBE_FRAME_SIZE];
-    CAmbePacket *packet;
-    CPacketQueue *queue;
+    CAmbePacket *packet1;
+    CAmbePacket *packet2;
     
     // anything coming in from codec client ?
     if ( m_Socket.Receive(&Buffer, &Ip, 1) != -1 )
@@ -195,20 +201,43 @@ void CStream::Task(void)
     }
     
     // anything in our queue ?
-    // XXX Get two transcoded packets...
     queue = m_VocodecChannel->GetPacketQueueOut1();
     while ( !queue->empty() )
     {
         // get the packet
-        packet = (CAmbePacket *)queue->front();
+        packet1 = (CAmbePacket *)queue->front();
         queue->pop();
-        // send it to client
-        EncodeDvFramePacket(&Buffer, packet->GetPid(), packet->GetAmbe());
-        m_Socket.Send(Buffer, Ip, m_uiPort);
-        // and done
-        delete packet;
+        // add it to the outgoing queue
+        m_QueuePacketOut1.push(packet1);
     }
     m_VocodecChannel->ReleasePacketQueueOut1();
+
+    queue = m_VocodecChannel->GetPacketQueueOut2();
+    while ( !queue->empty() )
+    {
+        // get the packet
+        packet2 = (CAmbePacket *)queue->front();
+        queue->pop();
+        // add it to the outgoing queue
+        m_QueuePacketOut2.push(packet2);
+    }
+    m_VocodecChannel->ReleasePacketQueueOut2();
+
+    while ( !m_QueuePacketOut1->empty() && !m_QueuePacketOut2->empty() )
+    {
+        packet1 = (CAmbePacket *)m_QueuePacketOut1->front();
+        m_QueuePacketOut1->pop();
+        packet2 = (CAmbePacket *)m_QueuePacketOut2->front();
+        m_QueuePacketOut2->pop();
+        // send it to client
+        // TODO :
+        //      when packet PIDs are preserverd, make sure that they match
+        EncodeDvFramePacket(&Buffer, packet1->GetPid(), packet1->GetCodec(), packet1->GetAmbe(), packet2->GetCodec(), packet2->GetAmbe());
+        m_Socket.Send(Buffer, Ip, m_uiPort);
+        // and done
+        delete packet1;
+        delete packet2;
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -230,14 +259,24 @@ bool CStream::IsValidDvFramePacket(const CBuffer &Buffer, uint8 *pid, uint8 *amb
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
-// packet encodeing helpers
+// packet encoding helpers
 
-void CStream::EncodeDvFramePacket(CBuffer *Buffer, uint8 Pid, uint8 *Ambe)
+void CStream::EncodeDvFramePacket(CBuffer *Buffer, uint8 Pid, uint8 Codec1, uint8 *Ambe1, uint8 Codec2, uint8 *Ambe2)
 {
-    // XXX Encode two transocded packets...
     Buffer->clear();
-    Buffer->Append((uint8)GetCodecsOut());
+    Buffer->Append((uint8)Codec1);
+    Buffer->Append((uint8)Codec2);
     Buffer->Append((uint8)Pid);
-    Buffer->Append(Ambe, 9);
+    Buffer->Append(Ambe1, 9);
+    Buffer->Append(Ambe2, 9);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////
+// queues helpers
+
+void CStream::PurgeAllQueues(void)
+{
+    m_QueuePacketOut1->Purge();
+    m_QueuePacketOut2->Purge();
 }
 

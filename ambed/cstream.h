@@ -65,7 +65,9 @@ protected:
     
     // packet encodeing helpers
     void EncodeDvFramePacket(CBuffer *, uint8, uint8 *);
-    
+
+    // queues helpers
+    void PurgeAllQueues(void);
     
 protected:
     // data
@@ -91,6 +93,9 @@ protected:
     bool            m_bStopThread;
     std::thread     *m_pThread;
 
+    // outgoing packet queues
+    CPacketQueue    m_QueuePacketOut1;
+    CPacketQueue    m_QueuePacketOut2;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////
