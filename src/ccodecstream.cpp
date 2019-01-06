@@ -156,7 +156,7 @@ void CCodecStream::Task(void)
     CBuffer Buffer;
     CIp     Ip;
     uint8   Codec1;
-    uint8   Codec2;    
+    uint8   Codec2;
     uint8   Ambe1[AMBE_SIZE];
     uint8   Ambe2[AMBE_SIZE];
     uint8   DStarSync[] = { 0x55,0x2D,0x16 };
