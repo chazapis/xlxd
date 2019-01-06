@@ -1,5 +1,5 @@
 //
-//  cdextraclient.h
+//  cdextraopenclient.h
 //  xlxd
 //
 //  Created by Antony Chazapis (SV9OAN) on 19/12/2018.
