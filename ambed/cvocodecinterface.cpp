@@ -107,15 +107,19 @@ void CVocodecInterface::SetChannelWithChannelOut(CVocodecChannel *Channel, int i
 
 CVocodecChannel *CVocodecInterface::GetChannelWithChannelIn(int iCh)
 {
+    CVocodecChannel *Channel;
     m_MutexChannels.lock();
-    return m_ChannelIn[iCh];
+    Channel = m_ChannelIn[iCh];
     m_MutexChannels.unlock();
+    return Channel;
 }
 
 CVocodecChannel *CVocodecInterface::GetChannelWithChannelOut(int iCh)
 {
+    CVocodecChannel *Channel;
     m_MutexChannels.lock();
-    return m_ChannelOut[iCh];
+    Channel = m_ChannelOut[iCh];
     m_MutexChannels.unlock();
+    return Channel;
 }
 
