@@ -234,7 +234,7 @@ void CStream::Task(void)
         // TODO :
         //      when packet PIDs are preserverd, make sure that they match
         EncodeDvFramePacket(&Buffer, packet1->GetPid(), packet1->GetCodec(), packet1->GetAmbe(), packet2->GetCodec(), packet2->GetAmbe());
-        m_Socket.Send(Buffer, Ip, m_uiPort);
+        m_Socket.Send(Buffer, Ip);
         // and done
         delete packet1;
         delete packet2;
