@@ -215,6 +215,10 @@ void CCodec2Interface::DecodeAmbePacket(CAmbePacket *PacketIn, CVoicePacket *Pac
     short voice[160];
 
     codec2_decode(codec2_state, voice, (unsigned char *)PacketIn->GetAmbe());
+    for ( int i = 0; i < 160; i++ )
+    {
+        voice[i] = MAKEWORD(HIBYTE(voice[i]), LOBYTE(voice[i]));
+    }
     PacketOut->SetVoice((uint8 *)voice, 160 * 2);
 }
 
@@ -224,8 +228,14 @@ void CCodec2Interface::DecodeAmbePacket(CAmbePacket *PacketIn, CVoicePacket *Pac
 void CCodec2Interface::EncodeVoicePacket(CVoicePacket *PacketIn, CAmbePacket *PacketOut)
 {
     unsigned char ambe[AMBE_SIZE];
+    short voice[160];
 
-    codec2_encode(codec2_state, ambe, (short *)PacketIn->GetVoice());
+    ::memcpy(voice, (short *)PacketIn->GetVoice(), 160 * 2);    
+    for ( int i = 0; i < 160; i++ )
+    {
+        voice[i] = MAKEWORD(HIBYTE(voice[i]), LOBYTE(voice[i]));
+    }
+    codec2_encode(codec2_state, ambe, voice);
     ambe[8] = 0x00;
     PacketOut->SetCodec(CODEC_CODEC2);
     PacketOut->SetAmbe((uint8 *)ambe);
