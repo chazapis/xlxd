@@ -75,7 +75,7 @@ public:
     bool IsDvHeader(void) const                     { return true; }
 
     // conversion
-    void ConvertToDstarStruct(struct dstar_header *, uint8) const;
+    void ConvertToDstarStruct(struct dstar_header *) const;
 
     // get valid
     bool IsValid(void) const;
@@ -95,6 +95,9 @@ public:
     char GetRpt2Module(void) const                  { return m_csRPT2.GetModule(); }
     char GetMyModule(void) const                    { return m_csMY.GetModule(); }
     
+    // set codec
+    void SetCodec(uint8);
+
     // set callsigns
     void SetRpt2Callsign(const CCallsign &cs)       { m_csRPT2 = cs; }
     void SetRpt2Module(char c)                      { m_csRPT2.SetModule(c); }

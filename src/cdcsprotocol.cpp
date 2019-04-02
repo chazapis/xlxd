@@ -537,7 +537,8 @@ void CDcsProtocol::EncodeDvPacket(const CDvHeaderPacket &Header, const CDvFrameP
     uint8 tag[] = { '0','0','0','1' };
     struct dstar_header DstarHeader;
 
-    Header.ConvertToDstarStruct(&DstarHeader, CODEC_AMBEPLUS);
+    Header.SetCodec(CODEC_AMBEPLUS);
+    Header.ConvertToDstarStruct(&DstarHeader);
 
     Buffer->Set(tag, sizeof(tag));
     Buffer->Append((uint8 *)&DstarHeader, sizeof(struct dstar_header) - sizeof(uint16));

@@ -551,8 +551,9 @@ bool CDplusProtocol::EncodeDvHeaderPacket(const CDvHeaderPacket &Packet, CBuffer
 {
     uint8 tag[]	= { 0x3A,0x80,0x44,0x53,0x56,0x54,0x10,0x00,0x00,0x00,0x20,0x00,0x01,0x02 };
     struct dstar_header DstarHeader;
-    
-    Packet.ConvertToDstarStruct(&DstarHeader, CODEC_AMBEPLUS);
+
+    Packet.SetCodec(CODEC_AMBEPLUS);
+    Packet.ConvertToDstarStruct(&DstarHeader);
    
     Buffer->Set(tag, sizeof(tag));
     Buffer->Append(Packet.GetStreamId());
