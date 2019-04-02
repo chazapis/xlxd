@@ -43,7 +43,8 @@ CCodec2Interface::CCodec2Interface()
 
 CCodec2Interface::~CCodec2Interface()
 {
-    codec2_destroy(codec2_state);
+    codec2_destroy(codec2_3200_state);
+    codec2_destroy(codec2_2400_state);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -54,8 +55,9 @@ bool CCodec2Interface::Init(void)
     bool ok = true;
 
     // create codec state    
-    codec2_state = codec2_create(CODEC2_MODE_3200);
-    if (codec2_state == NULL)
+    codec2_3200_state = codec2_create(CODEC2_MODE_3200);
+    codec2_2400_state = codec2_create(CODEC2_MODE_2400);
+    if (codec2_3200_state == NULL || codec2_2400_state == NULL)
     {
         ok = false;
     }
@@ -214,7 +216,7 @@ void CCodec2Interface::DecodeAmbePacket(CAmbePacket *PacketIn, CVoicePacket *Pac
 {
     short voice[160];
 
-    codec2_decode(codec2_state, voice, (unsigned char *)PacketIn->GetAmbe());
+    codec2_decode(codec2_3200_state, voice, (unsigned char *)PacketIn->GetAmbe());
     for ( int i = 0; i < 160; i++ )
     {
         voice[i] = MAKEWORD(HIBYTE(voice[i]), LOBYTE(voice[i]));
@@ -235,8 +237,8 @@ void CCodec2Interface::EncodeVoicePacket(CVoicePacket *PacketIn, CAmbePacket *Pa
     {
         voice[i] = MAKEWORD(HIBYTE(voice[i]), LOBYTE(voice[i]));
     }
-    codec2_encode(codec2_state, ambe, voice);
+    codec2_encode(codec2_3200_state, ambe, voice);
     ambe[8] = 0x00;
-    PacketOut->SetCodec(CODEC_CODEC2);
+    PacketOut->SetCodec(CODEC_CODEC2_3200);
     PacketOut->SetAmbe((uint8 *)ambe);
 }

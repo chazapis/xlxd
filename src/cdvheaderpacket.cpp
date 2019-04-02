@@ -134,11 +134,14 @@ uint8 CDvHeaderPacket::GetCodec(void) const
 {
     // The D-STAR vocoder extension by SV9OAN uses Flag 3 of the header
     // to identify whether the voice data payload is in Codec 2 format.
-    // Two Codec 2 modes are allowed (3200 or 2400) and optional FEC.
-    // Only support 3200 mode and no FEC here.
+    // Two Codec 2 modes are allowed, either 3200, or 2400 with added FEC.
     if ( m_uiFlag3 == 0x01 )
     {
-        return CODEC_CODEC2;
+        return CODEC_CODEC2_3200;
+    }
+    if ( m_uiFlag3 == 0x03 )
+    {
+        return CODEC_CODEC2_2400;
     }
 
     return CODEC_AMBEPLUS;
