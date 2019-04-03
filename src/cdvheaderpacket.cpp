@@ -97,12 +97,12 @@ CPacket *CDvHeaderPacket::Duplicate(void) const
 ////////////////////////////////////////////////////////////////////////////////////////
 // conversion
 
-void CDvHeaderPacket::ConvertToDstarStruct(struct dstar_header *buffer) const
+void CDvHeaderPacket::ConvertToDstarStruct(struct dstar_header *buffer, uint8 CodecOut) const
 {
     ::memset(buffer, 0, sizeof(struct dstar_header));
     buffer->Flag1 = m_uiFlag1;
     buffer->Flag2 = m_uiFlag2;
-    buffer->Flag3 = m_uiFlag3;
+    buffer->Flag3 = (CodecOut == CODEC_AMBEPLUS) ? 0x00 : 0x01 ;
     m_csUR.GetCallsign(buffer->UR);
     m_csRPT1.GetCallsign(buffer->RPT1);
     m_csRPT2.GetCallsign(buffer->RPT2);
@@ -145,26 +145,6 @@ uint8 CDvHeaderPacket::GetCodec(void) const
     }
 
     return CODEC_AMBEPLUS;
-}
-
-
-////////////////////////////////////////////////////////////////////////////////////////
-// set codec
-
-void CDvHeaderPacket::SetCodec(uint8 Codec)
-{
-    if ( Codec == CODEC_CODEC2_3200 )
-    {
-        m_uiFlag3 = 0x01;
-        return;
-    }
-    if ( Codec == CODEC_CODEC2_2400 )
-    {
-        m_uiFlag3 = 0x03;
-        return;
-    }
-
-    m_uiFlag3 = 0x00;
 }
 
 

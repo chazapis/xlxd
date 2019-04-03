@@ -72,14 +72,8 @@ bool CDextraOpenProtocol::EncodeDvHeaderPacket(const CDvHeaderPacket &Packet, CB
 {
     uint8 tag[] = { 'D','S','V','T',0x10,0x00,0x00,0x00,0x20,0x00,0x01,0x02 };
     struct dstar_header DstarHeader;
-
-    // If the codec is not set, it means the stream came from another
-    // protocol, so it should be transcoded into Codec 2 mode 3200.
-    if (Packet.GetCodec() == CODEC_AMBEPLUS)
-    {
-        Packet.SetCodec(CODEC_CODEC2_3200);
-    }
-    Packet.ConvertToDstarStruct(&DstarHeader);
+    
+    Packet.ConvertToDstarStruct(&DstarHeader, CODEC_CODEC2);
     
     Buffer->Set(tag, sizeof(tag));
     Buffer->Append(Packet.GetStreamId());
