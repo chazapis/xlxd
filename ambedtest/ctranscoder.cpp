@@ -221,7 +221,7 @@ CCodecStream *CTranscoder::GetStream(uint8 uiCodecIn)
         if ( m_bConnected )
         {
             // yes, post openstream request
-            EncodeOpenstreamPacket(&Buffer, uiCodecIn, GetCodecsOut(uiCodecsIn));
+            EncodeOpenstreamPacket(&Buffer, uiCodecIn, GetCodecsOut(uiCodecIn));
             m_Socket.Send(Buffer, m_AmbedIp, TRANSCODER_PORT);
             
             // wait relpy here
@@ -232,7 +232,7 @@ CCodecStream *CTranscoder::GetStream(uint8 uiCodecIn)
                     std::cout << "ambed openstream(" << m_StreamidOpenStream << ") ok" << std::endl;
                 
                     // create stream object
-                    stream = new CCodecStream(m_StreamidOpenStream, uiCodecIn, GetCodecsOut(uiCodecsIn));
+                    stream = new CCodecStream(m_StreamidOpenStream, uiCodecIn, GetCodecsOut(uiCodecIn));
                     
                     // init it
                     if ( stream->Init(m_PortOpenStream) )
