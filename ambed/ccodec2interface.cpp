@@ -78,7 +78,7 @@ bool CCodec2Interface::Init(void)
 
 uint8 CCodec2Interface::GetChannelCodec(int iCh) const
 {
-    return (iCh == 0) ? CODEC2_MODE_3200 : CODEC2_MODE_2400;
+    return (iCh == 0) ? CODEC_CODEC2_3200 : CODEC_CODEC2_2400;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -234,12 +234,14 @@ void CCodec2Interface::DecodeAmbePacket(CAmbePacket *PacketIn, CVoicePacket *Pac
         uint32 received_codeword;
         uint32 corrected_codeword;
         uint8 partial_byte;
+        // unsigned int bit_errors = 0;
 
         received_codeword = ((ambe[0] << 15) |
                              (((ambe[1] >> 4) & 0x0F) << 11) |
                              (ambe[6] << 3) |
                              ((ambe[7] >> 5) & 0x07));
         corrected_codeword = golay23_decode(received_codeword);
+        // bit_errors += golay23_count_errors(received_codeword, corrected_codeword);
 
         ambe[0] = (uint8)((corrected_codeword >> 15) & 0xFF);
         partial_byte = (uint8)(((corrected_codeword >> 11) & 0x0F) << 4);
@@ -249,6 +251,8 @@ void CCodec2Interface::DecodeAmbePacket(CAmbePacket *PacketIn, CVoicePacket *Pac
                              ((ambe[7] & 0x1F) << 6) |
                              ((ambe[8] >> 2) & 0x3F));
         corrected_codeword = golay23_decode(received_codeword);
+        // bit_errors += golay23_count_errors(received_codeword, corrected_codeword);
+        // std::cout << "Packet decoded with " << bit_errors << " bit errors" << std::endl;
 
         ambe[1] = partial_byte | (uint8)((corrected_codeword >> 19) & 0x0F);
         ambe[2] = (uint8)((corrected_codeword >> 11) & 0xFF);
